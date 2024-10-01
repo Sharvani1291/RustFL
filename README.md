@@ -53,13 +53,13 @@ Prerequisites
 ## Steps to Run the Client
 1. Install the dependencies:
 
-                                                            cargo build
+                                       cargo build
 2. Run the client code:
 
-                                                            cargo run
+                                       cargo run
 3. Run the server code:
 
-                                                            ........
+                                       cargo run
 
 ## Logging
 
