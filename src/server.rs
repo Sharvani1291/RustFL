@@ -61,6 +61,7 @@ struct WeightsUpdate {
     model_version: i32,
 }
 
+// Handler to get the current global model
 #[get("/get_model")]
 async fn get_model(data: web::Data<AppState>) -> impl Responder {
     let global_model = data.global_model.lock().unwrap();
@@ -73,6 +74,7 @@ async fn get_model(data: web::Data<AppState>) -> impl Responder {
     }))
 }
 
+// Handler to update the global model with client updates
 #[post("/update_model")]
 async fn update_model(
     weights: web::Json<WeightsUpdate>,
@@ -102,6 +104,7 @@ async fn update_model(
     }
 }
 
+// Main function to start the Actix web server
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     setup_logger();
