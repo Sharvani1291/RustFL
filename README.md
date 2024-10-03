@@ -49,7 +49,7 @@ The program uses the log crate to print informative messages, warnings, and erro
 
 ## Next two Releases:
 
-# v2 (Month 2): Differential Privacy and Model Update Integration
+1. v2 (Month 2): Differential Privacy and Model Update Integration
 
     Objective: Add Differential Privacy (DP) to the model update process for client-side privacy.
     Tasks:
@@ -57,7 +57,7 @@ The program uses the log crate to print informative messages, warnings, and erro
         2. Ensure the DP mechanism is balanced, protecting privacy without sacrificing model accuracy.
         3. Securely transmit the differentially private model updates to the server.
 
-# v3 (Month 3): Secure Multiparty Computation (SMPC) and Aggregation
+2. v3 (Month 3): Secure Multiparty Computation (SMPC) and Aggregation
 
     Objective: Implement secure aggregation of model updates using SMPC.
     Tasks:
