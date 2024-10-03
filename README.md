@@ -55,16 +55,16 @@ The program uses the log crate to print informative messages, warnings, and erro
     
     Tasks:
 
-        1. Develop the module for DP to add noise to model updates before transmission.
-        2. Ensure the DP mechanism is balanced, protecting privacy without sacrificing model accuracy.
-        3. Securely transmit the differentially private model updates to the server.
+    1. Develop the module for DP to add noise to model updates before transmission.
+    2. Ensure the DP mechanism is balanced, protecting privacy without sacrificing model accuracy.
+    3. Securely transmit the differentially private model updates to the server.
 
 2. v3 (Month 3): Secure Multiparty Computation (SMPC) and Aggregation
 
     Objective: Implement secure aggregation of model updates using SMPC.
     
     Tasks:
-    
-        1. Integrate cryptographic libraries (e.g., dalek-cryptography) to implement SMPC.
-        2. Develop the aggregation logic to securely aggregate encrypted model updates using secret sharing techniques.
-        3. Evaluate the security and performance of the aggregation process.
+
+    1. Integrate cryptographic libraries (e.g., dalek-cryptography) to implement SMPC.
+    2. Develop the aggregation logic to securely aggregate encrypted model updates using secret sharing techniques.
+    3. Evaluate the security and performance of the aggregation process.
