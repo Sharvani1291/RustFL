@@ -1,6 +1,12 @@
 <h1 align="center">RustFL: Secure and Asynchronous Federated Learning with Differential Privacy and Secure Multiparty Computation</h1>
 
-This project demonstrates the implementation of a federated learning for deep learning in Rust. The client performs local training on the MNIST dataset using a SimpleCNN model, communicates with a server to fetch and send model weights, and aggregates models asynchronously. The server aggregates model weights and updates the global model.
+This project demonstrates the implementation of a federated learning for deep learning in Rust. The client performs local training on the MNIST dataset using a SimpleCNN model, communicates with a server to fetch and send model weights, and aggregates models asynchronously. The server aggregates model weights and updates the global model. Additionally, the project includes advanced privacy and security features through Differential Privacy (DP) and Secure Multiparty Computation (SMPC).
+
+## Release 1 description:
+
+1. Created project directory hierarchy, Cargo.toml  for building the crate.
+2. Developed the server code using Rust’s async libraries (e.g., tokio or async-std) for asynchronous client handling.
+3. Implemented asynchronous handling of client connections, model update transmissions, and response handling.
 
 ## Crates Used
 Here are the primary dependencies used in this project:
@@ -11,31 +17,7 @@ Here are the primary dependencies used in this project:
 4. reqwest: Used for making HTTP requests to the server for fetching and sending model weights.
 5. tokio: Asynchronous runtime used to handle async tasks like HTTP requests.
 
-The Cargo.toml file should include these dependencies:
-
-                            [dependencies]
-                            #Client-only
-                            reqwest = { version = "0.12.7", features = ["json"] }
-                            ndarray = { version = "0.16.1",features = ["serde"]}
-                            numpy = "0.21.0"
-                            ndarray-rand = "0.15"
-                            ndarray-npy = "0.9.1"
-                            
-                            #Client-Server
-                            tch = "0.8.0"
-                            #torch-sys = "0.17.0"
-                            #tch-serde = "0.8.0"
-                            serde = { version = "1.0", features = ["derive"] }
-                            serde_json = "1.0"
-                            validator = "0.18.1"
-                            log = "0.4"
-                            env_logger = "0.11.5"
-                            
-                            #Server-only
-                            tokio = { version = "1", features = ["full"] }
-                            axum = "0.7.6"
-
-## Project Flow
+## Project Flow for Release 1
 
 1. Model Definition: The SimpleCNN struct defines the architecture of a convolutional neural network with two convolutional layers, a max-pooling layer, and two fully connected layers.
 2. Local Training: The train_local_model function uses the SimpleCNN model to train on a subset of the MNIST dataset, applying stochastic gradient descent (SGD) as the optimizer.
@@ -56,15 +38,29 @@ Prerequisites
                                        cargo build
 2. Run the client code:
 
-                                       cargo run
+                                       cargo run —bin client
 3. Run the server code:
 
-                                       cargo run
+                                       cargo run —bin client
 
 ## Logging
 
 The program uses the log crate to print informative messages, warnings, and errors during execution. The logs will help track the progress of each training round and any communication issues with the server.
 
-## Conclusion
+## Next two Releases:
 
-This Rust program implements a federated learning client that communicates asynchronously with a server. It uses the SimpleCNN architecture to perform local training on the MNIST dataset and supports model aggregation through HTTP requests. The client-server interaction follows the basic principles of federated learning, allowing for scalable model training across distributed edge devices.
+# v2 (Month 2): Differential Privacy and Model Update Integration
+
+    Objective: Add Differential Privacy (DP) to the model update process for client-side privacy.
+    Tasks:
+        1. Develop the module for DP to add noise to model updates before transmission.
+        2. Ensure the DP mechanism is balanced, protecting privacy without sacrificing model accuracy.
+        3. Securely transmit the differentially private model updates to the server.
+
+# v3 (Month 3): Secure Multiparty Computation (SMPC) and Aggregation
+
+    Objective: Implement secure aggregation of model updates using SMPC.
+    Tasks:
+        1. Integrate cryptographic libraries (e.g., dalek-cryptography) to implement SMPC.
+        2. Develop the aggregation logic to securely aggregate encrypted model updates using secret sharing techniques.
+        3. Evaluate the security and performance of the aggregation process.
