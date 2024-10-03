@@ -1,6 +1,35 @@
 <h1 align="center">RustFL: Secure and Asynchronous Federated Learning with Differential Privacy and Secure Multiparty Computation</h1>
 
-This project demonstrates the implementation of a federated learning for deep learning in Rust. The client performs local training on the MNIST dataset using a SimpleCNN model, communicates with a server to fetch and send model weights, and aggregates models asynchronously. The server aggregates model weights and updates the global model. Additionally, the project includes advanced privacy and security features through Differential Privacy (DP) and Secure Multiparty Computation (SMPC).
+# Project Explanation
+
+## Overview: 
+
+This workflow involves a federated learning architecture where a server and multiple clients collaborate to train a machine learning model while preserving data privacy. The process incorporates Differential Privacy (DP) and Secure Multiparty Computation (SMPC) to ensure the confidentiality of client data and model updates.
+
+1. Architecture Setup:
+
+    The system comprises a central server and multiple client nodes. Each client operates independently, accessing a global model provided       by the server.
+2. Client Training and Model Update Generation:
+
+    Clients retrieve the global model from the server and perform local training using their respective datasets, such as the MNIST dataset.     Upon completing the training, each client generates shares of its updated model weights, utilizing a secret sharing mechanism.
+
+3. Incorporating Differential Privacy:
+
+    To enhance privacy, clients apply Differential Privacy techniques by adding calibrated noise to each share of the model weights. This        step ensures that the individual contributions of clients are obscured, thus protecting sensitive information during transmission.
+
+4. Encryption and Transmission:
+
+    After applying Differential Privacy, clients encrypt the noisy shares to further secure the model updates. The encrypted shares are then     transmitted to the central server for aggregation.
+5. Server-Side Aggregation:
+
+    Upon receiving the encrypted shares from all participating clients, the server performs aggregation on these shares rather than on the       original model weights. This aggregation process is designed to preserve privacy and prevent leakage of individual client information.
+
+6. Model Reconstruction and Update:
+
+    Once the server has aggregated the shares, it reconstructs the updated model weights. The global model is then updated with these new        weights, ensuring that the model benefits from the collective training efforts of all clients while maintaining the confidentiality of       their local datasets.
+
+## Architecture Diagram:
+![image](https://github.com/user-attachments/assets/c03ff1bc-2a81-42c2-a30c-7dcf61a46d3e)
 
 ## Release 1 description:
 
@@ -12,10 +41,9 @@ This project demonstrates the implementation of a federated learning for deep le
 Here are the primary dependencies used in this project:
 
 1. tch: Provides support for deep learning, PyTorch model implementation, and tensor operations.
-2. ndarray: Provides support for N-dimensional arrays, used for processing data.
-3. log: Provides logging capabilities.
-4. reqwest: Used for making HTTP requests to the server for fetching and sending model weights.
-5. tokio: Asynchronous runtime used to handle async tasks like HTTP requests.
+2. log: Provides logging capabilities.
+3. reqwest: Used for making HTTP requests to the server for fetching and sending model weights.
+4. tokio: Asynchronous runtime used to handle async tasks like HTTP requests.
 
 ## Project Flow for Release 1
 
@@ -41,7 +69,7 @@ Prerequisites
                                        cargo run —bin client
 3. Run the server code:
 
-                                       cargo run —bin client
+                                       cargo run —bin server
 
 ## Logging
 
@@ -49,22 +77,17 @@ The program uses the log crate to print informative messages, warnings, and erro
 
 ## Next two Releases:
 
-1. v2 (Month 2): Differential Privacy and Model Update Integration
+1. Creating shares and adding Differential Privacy
 
-    Objective: Add Differential Privacy (DP) to the model update process for client-side privacy.
-    
-    Tasks:
+   Tasks:
 
-    1. Develop the module for DP to add noise to model updates before transmission.
-    2. Ensure the DP mechanism is balanced, protecting privacy without sacrificing model accuracy.
-    3. Securely transmit the differentially private model updates to the server.
+    1. client generates shares of its updated model weights, utilizing a secret sharing mechanism.
+    2. To enhance privacy, clients apply Differential Privacy techniques by adding calibrated noise to each share of the model weights.
 
-2. v3 (Month 3): Secure Multiparty Computation (SMPC) and Aggregation
+2. Secure Multiparty Computation (SMPC) and Aggregation
+   
+   Tasks:
 
-    Objective: Implement secure aggregation of model updates using SMPC.
-    
-    Tasks:
-
-    1. Integrate cryptographic libraries (e.g., dalek-cryptography) to implement SMPC.
-    2. Develop the aggregation logic to securely aggregate encrypted model updates using secret sharing techniques.
-    3. Evaluate the security and performance of the aggregation process.
+    1. Upon receiving the encrypted shares from all participating clients, the server performs aggregation on these shares rather than on           the original model weights.
+    2. Once the server has aggregated the shares, it reconstructs the updated model weights. The global model is then updated with these new        weights, ensuring that the model benefits from the collective training efforts of all clients while maintaining the confidentiality          of their local datasets.
+  
