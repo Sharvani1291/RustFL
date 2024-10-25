@@ -126,16 +126,16 @@ The program uses the log crate to print informative messages, warnings, and erro
 
 Sequence Overview
 
-    Client:
+Client:
 
-    Train the local model.
-    Split the updated weights into shares using Shamir’s secret sharing mechanism.
-    Apply Differential Privacy (add noise) to each share.
-    Send noisy shares to different servers.
+Train the local model.
+Split the updated weights into shares using Shamir’s secret sharing mechanism.
+Apply Differential Privacy (add noise) to each share.
+Send noisy shares to different servers.
 
-    Server:
+Server:
 
-    Receive noisy shares from clients.
-    Perform aggregation using SMPC technique.
-    Reconstruct the global model from the aggregated shares.
-    Update the global model with new weights.
+Receive noisy shares from clients.
+Perform aggregation using SMPC technique.
+Reconstruct the global model from the aggregated shares.
+Update the global model with new weights.
