@@ -90,7 +90,7 @@ Here are the primary dependencies used in this project:
 
 8. For Amd architecture:
 
-    Pytorch 2.2.0 and tch 0.15.0 and appropriate libtorch file is require required
+    Pytorch 2.2.0 and tch 0.15.0 and appropriate libtorch file is required
 
 ## Project Flow for Release 1
 
