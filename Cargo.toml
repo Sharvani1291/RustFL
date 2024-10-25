@@ -1,21 +1,26 @@
 [package]
-name = "VSCode_P1"
+name = "RustFL"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 #Client-only
 reqwest = { version = "0.12.7", features = ["json"] } #HTTP requests - High Level
+rand="0.8.5" #Random number generator
+rand_distr="0.4.3"
+ndarray= "0.16.1"
+fernet="0.2.2"
+base64="0.22.1"
 
 #Client-Server
-tch = "0.17.0"#Pytorch C++ API(libtorch)
+tch = "0.18.0"#Pytorch C++ API(libtorch)
 serde = { version = "1.0", features = ["derive"] } #Serialize/Deserialize data
 serde_json = "1.0"
 log = "0.4"#Logging replace in python
 env_logger = "0.11.5"#logging implementation for log
+tokio = { version = "1", features = ["full"] } #Asynchronous I/O backed applications
 
 #Server-only
-tokio = { version = "1", features = ["full"] } #Asynchronous I/O backed applications
 actix-web = "4.9.0"
 
 [[bin]]
