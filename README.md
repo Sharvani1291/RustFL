@@ -45,6 +45,53 @@ Here are the primary dependencies used in this project:
 3. reqwest: Used for making HTTP requests to the server for fetching and sending model weights.
 4. tokio: Asynchronous runtime used to handle async tasks like HTTP requests.
 
+## Requirements
+
+1. Arm architecture required
+
+2. latest libtorch file need to be downloaded from official pytorch website
+
+3. pytorch 2.5.0 version is required
+
+4. for OpenSSL error: follow the steps
+
+        Download openssl-3.4.0.tar.gz from github and extract it
+        In the terminal, follow:
+        cd /Absolute/path/to/openssl-3.4.0
+        ./config --prefix=$HOME/openssl --openssldir=$HOME/openssl
+        make
+        make install
+        export OPENSSL_DIR=$HOME/openssl
+        export OPENSSL_LIB_DIR=$OPENSSL_DIR/lib
+        export OPENSSL_INCLUDE_DIR=$OPENSSL_DIR/include
+        export PKG_CONFIG_PATH=$OPENSSL_LIB_DIR/pkgconfig
+        source ~/.bashrc
+        ls $OPENSSL_LIB_DIR
+        ls $OPENSSL_INCLUDE_DIR
+        cd /Absolute/path/to/RustFL
+        cargo clean
+        cargo build
+
+5. For torch not found error, follow following in terminal:
+
+        python3 --version #verify the version and update
+        python3 -m pip install --upgrade pip
+        pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117
+        source /path/to/venv/bin/activate
+        export LIBTORCH_USE_PYTORCH=1
+
+6. For .dyld file not found error:
+
+        export DYLD_LIBRARY_PATH=/Absolute/path/to/libtorch/lib
+
+7. To run client code with logInfo:
+
+        RUST_LOG=info cargo run --bin client
+
+8. For Amd architecture:
+
+    Pytorch 2.2.0 and tch 0.15.0 and appropriate libtorch file is require required
+
 ## Project Flow for Release 1
 
 1. Model Definition: The SimpleCNN struct defines the architecture of a convolutional neural network with two convolutional layers, a max-pooling layer, and two fully connected layers.
@@ -75,7 +122,7 @@ Prerequisites
 
 The program uses the log crate to print informative messages, warnings, and errors during execution. The logs will help track the progress of each training round and any communication issues with the server.
 
-## Next two Releases:
+## Project Flow for Release 2
 
 1. Creating shares and adding Differential Privacy
 
@@ -88,6 +135,6 @@ The program uses the log crate to print informative messages, warnings, and erro
    
    Tasks:
 
-    1. Upon receiving the encrypted shares from all participating clients, the server performs aggregation on these shares rather than on           the original model weights.
-    2. Once the server has aggregated the shares, it reconstructs the updated model weights. The global model is then updated with these new        weights, ensuring that the model benefits from the collective training efforts of all clients while maintaining the confidentiality          of their local datasets.
+    1. Upon receiving the encrypted shares from all participating clients, the server performs aggregation on these shares rather than on    the original model weights.
+    2. Once the server has aggregated the shares, it reconstructs the updated model weights. The global model is then updated with these new  weights, ensuring that the model benefits from the collective training efforts of all clients while maintaining the confidentiality  of their local datasets.
   

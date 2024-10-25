@@ -34,10 +34,10 @@ impl Config {
         Config {
             learning_rate: 0.001,
             batch_size: 64,
-            noise_level: 0.1,  // This can be adjusted for DP
+            noise_level: 0.1,
             num_rounds: 3,
-            sensitivity: 1.0,  // Sensitivity of the function (adjust as necessary)
-            epsilon: 0.5,  // Privacy budget (adjust as necessary)
+            sensitivity: 1.0,
+            epsilon: 0.5,
         }
     }
 }
@@ -46,87 +46,29 @@ impl Config {
 #[derive(Debug)]
 struct SimpleCNN {
     conv1: Conv2D,
-    //conv2: Conv2D,
     fc1: Linear,
     fc2: Linear,
 }
 
-// Implementation of the SimpleCNN model.
-/*impl SimpleCNN {
-    // Create a new instance of SimpleCNN.
-    fn new(vs: &nn::Path) -> SimpleCNN {
-        let conv1 = nn::conv2d(vs, 1, 32, 3, nn::ConvConfig {
-            stride: 1,
-            padding: 1,
-            ..Default::default()
-        });
-        let conv2 = nn::conv2d(vs, 32, 64, 3, nn::ConvConfig {
-            stride: 1,
-            padding: 1,
-            ..Default::default()
-        });
-        let fc1 = nn::linear(vs, 64 * 7 * 7, 128, Default::default());
-        let fc2 = nn::linear(vs, 128, 10, Default::default());
-        SimpleCNN {
-            conv1,
-            conv2,
-            fc1,
-            fc2,
-        }
-    }
-}
-
-// Implementation of the nn::Module trait for SimpleCNN.
-impl nn::Module for SimpleCNN {
-    fn forward(&self, xs: &Tensor) -> Tensor {
-        let xs = xs.apply(&self.conv1)
-            .relu()
-            .max_pool2d(&[2, 2], &[2, 2], &[0, 0], &[1, 1], false)
-            .apply(&self.conv2)
-            .relu()
-            .max_pool2d(&[2, 2], &[2, 2], &[0, 0], &[1, 1], false)
-            .view([-1, 64 * 7 * 7])
-            .apply(&self.fc1)
-            .relu()
-            .apply(&self.fc2);
-
-        xs
-    }
-}*/
 
 impl SimpleCNN {
     fn new(vs: &nn::Path) -> SimpleCNN {
         let conv1 = nn::conv2d(vs, 1, 32, 3, Default::default());
-        //let conv2 = nn::conv2d(vs, 32, 64, 3, Default::default());
         let fc1 = nn::linear(vs, 32*13*13, 128, Default::default());
         let fc2 = nn::linear(vs, 128, 10, Default::default());
 
         SimpleCNN { conv1,
-            //conv2,
             fc1,
             fc2 }
     }
 
     fn forward(&self, xs: &Tensor) -> Tensor {
-        let xs = xs.view([-1, 1, 28, 28]); // Assuming batch size can vary
-        //info!("Input shape: {:?}", xs.size());
-
+        let xs = xs.view([-1, 1, 28, 28]);
         let xs = xs.apply(&self.conv1).relu();
-        //info!("After conv1: {:?}", xs.size());
-
         let xs = xs.max_pool2d_default(2);
-        //info!("After max_pool2d (1): {:?}", xs.size());
-
-        // Update the view size based on Python output
         let xs = xs.view([-1, 32 * 13 * 13]);
-        //info!("Flattened shape: {:?}", xs.size());
-
         let xs = xs.apply(&self.fc1).relu();
-        //info!("After fc1: {:?}", xs.size());
-
         let xs = xs.apply(&self.fc2);
-        //info!("After fc2: {:?}", xs.size());
-
         xs
     }
 }
@@ -139,21 +81,14 @@ fn train_local_model(
     criterion: &dyn Fn(&Tensor, &Tensor) -> Tensor,
     device: Device
 ) -> (f64, Vec<f64>) {
-    //model.train();
     let mut running_loss = 0.0;
     info!("Training");
 
     for (batch_idx, (data, target)) in train_loader.iter().enumerate() {
-
-        let data = data.to(device);//.view([-1,1,28,28]);
-        //info!("Data shape: {:?}", data.size());
+        let data = data.to(device);
         let target = target.to(device);
-        //info!("Target shape: {:?}", target.size());
         optimizer.zero_grad();
-
-        // Forward pass
         let output = model.forward(&data);
-        //info!("Output shape: {:?}", output.size());
         let loss = criterion(&output, &target);
         loss.backward();
         optimizer.step();
@@ -168,9 +103,6 @@ fn train_local_model(
 
     let avg_loss = running_loss / train_loader.len() as f64;
     info!("Average Loss: {}", avg_loss);
-    /*******************
-    (avg_loss, model.state_dict())
-    *******************/
     (avg_loss,vec![1f64,2f64]) // Added in Next Release
 
 }
@@ -216,14 +148,12 @@ pub fn secret_share_weights(weights: Vec<f64>, num_shares: usize, threshold: usi
             let x = (i + 1) as f64;
             let share: f64 = coeffs.iter()
                 .enumerate()
-                //.map(|(idx, &coeff)| coeff * x.powi(idx as i32))  // x^idx * coeff
-                //.sum();
                 .fold(0.0, |acc, (idx, &coeff)| acc+coeff *(x.powi(idx as i32)));
-            shares[i].push(share);  // Append the share to the shares vector
+            shares[i].push(share);
         }
     }
 
-    shares  // Return the shares as a vector of vectors
+    shares
 }
 
 fn encrypt_share(share: &str, key: &str) -> Result<Vec<u8>,String> {
@@ -275,7 +205,7 @@ async fn send_local_model_weights(
         info!("Model update successful");
     } else if response.status().as_u16() == 409 {
         warn!("Model version mismatch. Fetching the latest model.");
-        fetch_global_model(model).await.unwrap(); // Fetch the latest model if there's a version mismatch.
+        fetch_global_model(model).await.unwrap();
     } else {
         error!("Failed to send model update: {}", response.status());
     }
@@ -381,26 +311,6 @@ fn get_train_data() -> Vec<(Tensor, Tensor)> {
     // Load MNIST dataset.
     let dataset = tch::vision::mnist::load_dir("mnist_data/MNIST/raw").unwrap();
 
-    /**************************************************************************************************
-        println!("Loaded MNIST dataset with {} training images.", dataset.train_images.size()[0]);
-
-        // Normalize and subset training dataset.
-        let train_dataset_images = transform.forward(&dataset.train_images);
-        let train_dataset_labels = dataset.train_labels.to_kind(Kind::Int64);
-        println!("Images shape after normalization: {:?}", train_dataset_images.size());
-        println!("Labels shape: {:?}", train_dataset_labels.size());
-
-        // Ensure we have enough data to create a subset.
-        let subset_size = 10000;
-        let total_images = train_dataset_images.size()[0];
-        let total_labels = train_dataset_labels.size()[0];
-
-        if total_images < subset_size || total_labels < subset_size {
-            panic!("Not enough data in dataset: images {}, labels {}", total_images, total_labels);
-        }
-
-    *************************************************************************************************/
-
     // Normalize and subset training dataset.
     let train_dataset_images = transform.forward(&dataset.train_images);
     let train_dataset_labels = dataset.train_labels.to_kind(kind::Kind::Int64);
@@ -424,16 +334,10 @@ fn get_train_data() -> Vec<(Tensor, Tensor)> {
 
         let batch_dataset_images = Tensor::cat(&chunk.iter().map(|(d, _)| d.copy()).collect::<Vec<_>>(), 0);
         let batch_dataset_labels = Tensor::cat(&chunk.iter().map(|(_, t)| t.copy()).collect::<Vec<_>>(), 0);
-
-        // Log shapes
-        //info!("Batch data shape: {:?}", batch_dataset_images.size());
-        //info!("Batch target shape: {:?}", batch_dataset_labels.size());
-
         batches.push((batch_dataset_images, batch_dataset_labels));
     }
 
     batches
-    //train_dataset
 }
 
 
