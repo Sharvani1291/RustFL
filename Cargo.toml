@@ -19,6 +19,7 @@ serde_json = "1.0"
 log = "0.4"#Logging replace in python
 env_logger = "0.11.5"#logging implementation for log
 tokio = { version = "1", features = ["full"] } #Asynchronous I/O backed applications
+tch = { version = "0.5", features = ["serde"] }
 
 #Server-only
 actix-web = "4.9.0"
