@@ -1,123 +1,114 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
 use serde::{Deserialize, Serialize};
-use std::sync::Mutex;
-use tch::{nn, nn::Module, nn::OptimizerConfig, Device, Tensor};
 use log::info;
+use tch::{nn, nn::Module, nn::OptimizerConfig, Tensor};
+use std::sync::{Arc, Mutex};
 
-// Logging setup
-fn setup_logger() {
-    env_logger::init();
-}
-
-// Global state for the model
-#[derive(Clone)]
-struct AppState {
-    global_model: Mutex<SimpleCNN>,
-    client_updates: Mutex<Vec<WeightsUpdate>>,
-    current_model_version: Mutex<i32>,
-    aggregation_goal: Mutex<i32>,
-}
-
-// Define the CNN model structure
-#[derive(Debug)]
-struct SimpleCNN {
-    conv1: nn::Conv2D,
-    conv2: nn::Conv2D,
-    fc1: nn::Linear,
-    fc2: nn::Linear,
-}
-
-impl SimpleCNN {
-    fn new(vs: &nn::Path) -> SimpleCNN {
-        let conv1 = nn::conv2d(vs, 1, 32, 3, Default::default());
-        let conv2 = nn::conv2d(vs, 32, 64, 3, Default::default());
-        let fc1 = nn::linear(vs, 64 * 7 * 7, 128, Default::default());
-        let fc2 = nn::linear(vs, 128, 10, Default::default());
-
-        SimpleCNN { conv1, conv2, fc1, fc2 }
-    }
-
-    fn forward(&self, xs: &Tensor) -> Tensor {
-        xs.view([-1, 1, 28, 28])
-            .apply(&self.conv1)
-            .relu()
-            .max_pool2d_default(2)
-            .apply(&self.conv2)
-            .relu()
-            .max_pool2d_default(2)
-            .view([-1, 64 * 7 * 7])
-            .apply(&self.fc1)
-            .relu()
-            .apply(&self.fc2)
-    }
-}
-
-// Struct for deserializing the model weights update
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct WeightsUpdate {
-    model_weights: Vec<Vec<f64>>,
-    num_samples: i32,
+    model_weights: Vec<String>,
+    num_samples: usize,
     loss: f64,
-    model_version: i32,
+    model_version: usize,
 }
 
-// Handler to get the current global model
+// Global state for model version and client updates
+struct AppState {
+    aggregation_goal: usize,
+    current_model_version: Mutex<usize>,
+    client_updates: Mutex<Vec<WeightsUpdate>>,
+    global_model: Mutex<nn::Sequential>,
+}
+
+// Simple CNN using tch-rs (Rust bindings for PyTorch)
+fn create_model(vs: &nn::Path) -> nn::Sequential {
+    nn::seq()
+        .add(nn::conv2d(vs, 1, 32, 3, nn::ConvConfig::default()))
+        .add_fn(|xs| xs.max_pool2d_default(2))
+        .add_fn(|xs| xs.view([-1, 32 * 14 * 14]))
+        .add(nn::linear(vs, 32 * 14 * 14, 128, Default::default()))
+        .add_fn(|xs| xs.relu())
+        .add(nn::linear(vs, 128, 10, Default::default()))
+}
+
+// Federated averaging on encrypted weights (this example is simplified)
+fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
+    let mut aggregated_weights = Vec::new();
+
+    // Perform simple aggregation (just for demonstration)
+    for i in 0..weights_updates[0].len() {
+        let encrypted_sum = weights_updates
+            .iter()
+            .fold(weights_updates[0][i].clone(), |sum, client_weights| {
+                sum + &client_weights[i] // Simplified string concatenation
+            });
+        aggregated_weights.push(encrypted_sum);
+    }
+
+    aggregated_weights
+}
+
 #[get("/get_model")]
 async fn get_model(data: web::Data<AppState>) -> impl Responder {
     let global_model = data.global_model.lock().unwrap();
-    let model_state_dict = "Model State".to_string(); // Placeholder for model weights
-    let current_model_version = *data.current_model_version.lock().unwrap();
+    let model_state_dict = global_model
+        .parameters()
+        .iter()
+        .map(|(key, value)| (key.clone(), value.to_kind(tch::Kind::Float).to_vec()))
+        .collect::<Vec<_>>();
 
     HttpResponse::Ok().json(serde_json::json!({
         "model_state_dict": model_state_dict,
-        "model_version": current_model_version
+        "model_version": *data.current_model_version.lock().unwrap()
     }))
 }
 
-// Handler to update the global model with client updates
 #[post("/update_model")]
-async fn update_model(
-    weights: web::Json<WeightsUpdate>,
-    data: web::Data<AppState>,
-) -> impl Responder {
+async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppState>) -> impl Responder {
     let mut client_updates = data.client_updates.lock().unwrap();
-    let aggregation_goal = *data.aggregation_goal.lock().unwrap();
+    client_updates.push(update.into_inner());
 
-    info!("Received model update from client with loss: {}", weights.loss);
-    client_updates.push(weights.into_inner());
+    if client_updates.len() >= data.aggregation_goal {
+        let selected_clients = client_updates.split_off(0); // Select clients for aggregation
+        let encrypted_weights_list = selected_clients
+            .iter()
+            .map(|client| client.model_weights.clone())
+            .collect::<Vec<_>>();
 
-    if client_updates.len() >= aggregation_goal as usize {
-        // Placeholder for model aggregation (FedAvg)
-        client_updates.clear(); // Reset client updates after aggregation
+        let aggregated_encrypted_weights = fed_avg_encrypted(encrypted_weights_list);
+        info!("Aggregation is successful!");
 
-        let mut current_model_version = data.current_model_version.lock().unwrap();
-        *current_model_version += 1;
+        let mut current_version = data.current_model_version.lock().unwrap();
+        *current_version += 1;
 
         HttpResponse::Ok().json(serde_json::json!({
-            "message": "Global model updated",
-            "model_version": *current_model_version
+            "message": "Global model updated with encrypted weights",
+            "encrypted_model_weights": aggregated_encrypted_weights,
+            "model_version": *current_version
         }))
     } else {
         HttpResponse::Ok().json(serde_json::json!({
-            "message": format!("Waiting for more client updates. Received {}/{}", client_updates.len(), aggregation_goal)
+            "message": format!(
+                "Waiting for more client updates. Received {}/{} updates",
+                client_updates.len(),
+                data.aggregation_goal
+            )
         }))
     }
 }
 
-// Main function to start the Actix web server
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
-    setup_logger();
+    env_logger::init(); // Initialize logging
 
-    // Initialize the global model
-    let vs = nn::VarStore::new(Device::Cpu);
-    let global_model = SimpleCNN::new(&vs.root());
+    let vs = nn::VarStore::new(tch::Device::Cpu);
+    let global_model = create_model(&vs.root());
 
     let state = web::Data::new(AppState {
-        global_model: Mutex::new(global_model),
-        client_updates: Mutex::new(vec![]),
+        aggregation_goal: 1,
         current_model_version: Mutex::new(0),
-        aggregation_goal: Mutex::new(1),  // Placeholder for aggregation goal
+        client_updates: Mutex::new(Vec::new()),
+        global_model: Mutex::new(global_model),
     });
 
     HttpServer::new(move || {
@@ -126,7 +117,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_model)
             .service(update_model)
     })
-    .bind(("127.0.0.1", 8081))?
+    .bind(("0.0.0.0", 8081))?
     .run()
     .await
 }

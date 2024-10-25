@@ -124,17 +124,18 @@ The program uses the log crate to print informative messages, warnings, and erro
 
 ## Project Flow for Release 2
 
-1. Creating shares and adding Differential Privacy
+Sequence Overview
 
-   Tasks:
+    Client:
 
-    1. client generates shares of its updated model weights, utilizing a secret sharing mechanism.
-    2. To enhance privacy, clients apply Differential Privacy techniques by adding calibrated noise to each share of the model weights.
+    Train the local model.
+    Split the updated weights into shares using Shamir’s secret sharing mechanism.
+    Apply Differential Privacy (add noise) to each share.
+    Send noisy shares to different servers.
 
-2. Secure Multiparty Computation (SMPC) and Aggregation
-   
-   Tasks:
+    Server:
 
-    1. Upon receiving the encrypted shares from all participating clients, the server performs aggregation on these shares rather than on    the original model weights.
-    2. Once the server has aggregated the shares, it reconstructs the updated model weights. The global model is then updated with these new  weights, ensuring that the model benefits from the collective training efforts of all clients while maintaining the confidentiality  of their local datasets.
-  
+    Receive noisy shares from clients.
+    Perform aggregation using SMPC technique.
+    Reconstruct the global model from the aggregated shares.
+    Update the global model with new weights.
