@@ -13,7 +13,8 @@ fernet="0.2.2"
 base64="0.22.1"
 
 #Client-Server
-tch = "0.18.0"#Pytorch C++ API(libtorch)
+#tch = "0.18.0"#Pytorch C++ API(libtorch)
+tch = "0.15.0"
 serde = { version = "1.0", features = ["derive"] } #Serialize/Deserialize data
 serde_json = "1.0"
 log = "0.4"#Logging replace in python
@@ -25,7 +26,7 @@ actix-web = "4.9.0"
 
 [[bin]]
 name = "client"
-path = "src/client.rs"
+path = "src/Client/client.rs"
 [[bin]]
 name = "server"
-path = "src/server.rs"
+path = "src/Server/server.rs"
