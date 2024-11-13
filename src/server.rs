@@ -1,11 +1,12 @@
 use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
 use serde::{Deserialize, Serialize};
 use log::info;
-use tch::{nn, nn::Module, nn::OptimizerConfig, Tensor, nn::VarStore};
+use tch::{nn, nn::Module, nn::OptimizerConfig, Tensor};
 use std::sync::{Arc, Mutex};
+use reqwest::Response;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct WeightsUpdate {
+pub struct WeightsUpdate {
     model_weights: Vec<String>,
     num_samples: usize,
     loss: f64,
@@ -13,16 +14,15 @@ struct WeightsUpdate {
 }
 
 // Global state for model version and client updates
-struct AppState {
+pub struct AppState {
     aggregation_goal: usize,
-    vs: VarStore,
     current_model_version: Mutex<usize>,
     client_updates: Mutex<Vec<WeightsUpdate>>,
     global_model: Mutex<nn::Sequential>,
 }
 
 // Simple CNN using tch-rs (Rust bindings for PyTorch)
-fn create_model(vs: &nn::Path) -> nn::Sequential {
+pub fn create_model(vs: &nn::Path) -> nn::Sequential {
     nn::seq()
         .add(nn::conv2d(vs, 1, 32, 3, nn::ConvConfig::default()))
         .add_fn(|xs| xs.max_pool2d_default(2))
@@ -32,53 +32,17 @@ fn create_model(vs: &nn::Path) -> nn::Sequential {
         .add(nn::linear(vs, 128, 10, Default::default()))
 }
 
-// Federated averaging on encrypted weights (this example is simplified)
-fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
-    let mut aggregated_weights = Vec::new();
-
-    // Perform simple aggregation (just for demonstration)
-    for i in 0..weights_updates[0].len() {
-        let encrypted_sum = weights_updates
-            .iter()
-            .fold(weights_updates[0][i].clone(), |sum, client_weights| {
-                sum + &client_weights[i] // Simplified string concatenation
-            });
-        aggregated_weights.push(encrypted_sum);
-    }
-
-    aggregated_weights
-}
-
 #[get("/get_model")]
-async fn get_model(data: web::Data<AppState>) -> impl Responder {
-    let vs = &data.vs;
-    // let global_model = data.global_model.lock().unwrap();
-
-    // let model_state_dict = global_model
-    //     .parameters()
-    //     .iter()
-    //     // .map(|(key, value)| (key.clone(), value.to_kind(tch::Kind::Float).to_vec()))
-    //     .map(|(key, value)| {
-    //         // converting tensor to Vec and handle nested structures
-    //         let tensor_as_vec = match value.to_kind(tch::Kind::Float).view(-1).to_vec() {
-    //             Ok(vec) => vec,
-    //             Err(_) => {
-    //                 // Handle any error in conversion and log for debugging
-    //                 log::error!("Failed to convert tensor for key: {}", key);
-    //                 vec![] // Or another fallback
-    //             }
-    //         };
-    //         (key.clone(), tensor_as_vec)
-    //     })
-    //     .collect::<Vec<_>>();
-
-    let model_state_dict = vs
-        .variables()
+pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
+    let global_model = data.global_model.lock().unwrap();
+    /*let model_state_dict = global_model
+        .parameters()
         .iter()
         .map(|(key, value)| (key.clone(), value.to_kind(tch::Kind::Float).to_vec()))
         .collect::<Vec<_>>();
+     */
+    let model_state_dict = "Model State Dict".to_string();
 
-        
     HttpResponse::Ok().json(serde_json::json!({
         "model_state_dict": model_state_dict,
         "model_version": *data.current_model_version.lock().unwrap()
@@ -86,7 +50,9 @@ async fn get_model(data: web::Data<AppState>) -> impl Responder {
 }
 
 #[post("/update_model")]
-async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppState>) -> impl Responder {
+pub async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppState>) -> impl Responder {
+    info!("Received model update from client with loss: {}",update.loss);
+
     let mut client_updates = data.client_updates.lock().unwrap();
     client_updates.push(update.into_inner());
 
@@ -101,6 +67,7 @@ async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppState
         info!("Aggregation is successful!");
 
         let mut current_version = data.current_model_version.lock().unwrap();
+        info!("Global model updated, Version: {}",current_version);
         *current_version += 1;
 
         HttpResponse::Ok().json(serde_json::json!({
@@ -119,29 +86,19 @@ async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppState
     }
 }
 
-#[tokio::main]
-async fn main() -> std::io::Result<()> {
-    env_logger::init(); // Initialize logging
+// Federated averaging on encrypted weights (this example is simplified)
+pub fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
+    let mut aggregated_weights = Vec::new();
 
-    let vs = nn::VarStore::new(tch::Device::Cpu);
-    let global_model = create_model(&vs.root());
+    // Perform simple aggregation (just for demonstration)
+    for i in 0..weights_updates[0].len() {
+        let encrypted_sum = weights_updates
+            .iter()
+            .fold(weights_updates[0][i].clone(), |sum, client_weights| {
+                sum + &client_weights[i] // Simplified string concatenation
+            });
+        aggregated_weights.push(encrypted_sum);
+    }
 
-    let state = web::Data::new(AppState {
-        vs,
-        aggregation_goal: 1,
-        current_model_version: Mutex::new(0),
-        client_updates: Mutex::new(Vec::new()),
-        global_model: Mutex::new(global_model),
-    });
-
-    HttpServer::new(move || {
-        App::new()
-            .app_data(state.clone())
-            .service(get_model)
-            .service(update_model)
-    })
-    .bind(("0.0.0.0", 8081))?
-    .run()
-    .await
+    aggregated_weights
 }
-
