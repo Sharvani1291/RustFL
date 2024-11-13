@@ -32,7 +32,7 @@ actix-web = "4.9.0"
 
 [[bin]]
 name = "example_client"
-path = "src/Example/example_client.rs"
+path = "Example/example_client.rs"
 [[bin]]
 name = "example_server"
-path = "src/Example/example_server.rs"
+path = "Example/example_server.rs"
