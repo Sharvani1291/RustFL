@@ -85,7 +85,6 @@ async fn get_model(data: web::Data<AppState>) -> impl Responder {
             (key.clone(), tensor_as_vec)
         })
         .collect::<Vec<_>>();
-        .collect::<Vec<_>>();
 
     HttpResponse::Ok().json(serde_json::json!({
         "model_state_dict": model_state_dict,
