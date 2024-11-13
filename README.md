@@ -149,7 +149,7 @@ Established server and client connection.
 Implemented transferring of encrypted noisy shares from client to server.
 Federated Learning end-to-end flow is implemented.
 
-Released our first version RustFL 0.1.0 in [crates.io]
+Released our first version of RustFLv0.1.0 
 [https://crates.io/crates/RustFL]
 
 
