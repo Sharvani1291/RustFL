@@ -8,6 +8,7 @@ readme = "README.md"
 repository = "https://github.com/Sharvani1291/RustFL"
 license = "MIT"
 keywords = ["federated","noise","client","server","dp"]
+include = ["src/*", "Cargo.toml"]
 
 [dependencies]
 #client-only
