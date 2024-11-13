@@ -1,7 +1,7 @@
 use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
 use serde::{Deserialize, Serialize};
 use log::info;
-use tch::{nn, nn::Module, nn::OptimizerConfig, Tensor};
+use tch::{nn, nn::Module, nn::OptimizerConfig, Tensor, nn::VarStore};
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -52,26 +52,33 @@ fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
 #[get("/get_model")]
 async fn get_model(data: web::Data<AppState>) -> impl Responder {
     let vs = &data.vs;
-    let global_model = data.global_model.lock().unwrap();
+    // let global_model = data.global_model.lock().unwrap();
 
-    let model_state_dict = global_model
-        .parameters()
+    // let model_state_dict = global_model
+    //     .parameters()
+    //     .iter()
+    //     // .map(|(key, value)| (key.clone(), value.to_kind(tch::Kind::Float).to_vec()))
+    //     .map(|(key, value)| {
+    //         // converting tensor to Vec and handle nested structures
+    //         let tensor_as_vec = match value.to_kind(tch::Kind::Float).view(-1).to_vec() {
+    //             Ok(vec) => vec,
+    //             Err(_) => {
+    //                 // Handle any error in conversion and log for debugging
+    //                 log::error!("Failed to convert tensor for key: {}", key);
+    //                 vec![] // Or another fallback
+    //             }
+    //         };
+    //         (key.clone(), tensor_as_vec)
+    //     })
+    //     .collect::<Vec<_>>();
+
+    let model_state_dict = vs
+        .variables()
         .iter()
-        // .map(|(key, value)| (key.clone(), value.to_kind(tch::Kind::Float).to_vec()))
-        .map(|(key, value)| {
-            // converting tensor to Vec and handle nested structures
-            let tensor_as_vec = match value.to_kind(tch::Kind::Float).view(-1).to_vec() {
-                Ok(vec) => vec,
-                Err(_) => {
-                    // Handle any error in conversion and log for debugging
-                    log::error!("Failed to convert tensor for key: {}", key);
-                    vec![] // Or another fallback
-                }
-            };
-            (key.clone(), tensor_as_vec)
-        })
+        .map(|(key, value)| (key.clone(), value.to_kind(tch::Kind::Float).to_vec()))
         .collect::<Vec<_>>();
 
+        
     HttpResponse::Ok().json(serde_json::json!({
         "model_state_dict": model_state_dict,
         "model_version": *data.current_model_version.lock().unwrap()
