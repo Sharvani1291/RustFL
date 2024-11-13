@@ -1,12 +1,9 @@
-use std::fmt::Debug;
-use log::{error, info, warn};
-use reqwest::Client;
-use serde_json::Value;
-use tch::{kind, nn::{self, Conv2D, Linear, Module, Optimizer, OptimizerConfig, Sgd, VarStore}, Device, Kind, Tensor};
-use serde::{Deserialize, Serialize};
-use rand_distr::{Normal, Distribution};
-use rand::{thread_rng, Rng};
-use fernet::Fernet;
+pub use std::fmt::Debug;
+pub use log::{error, info, warn};
+pub use reqwest::Client;
+pub use serde_json::Value;
+pub use tch::{kind, nn::{self, Conv2D, Linear, Module, Optimizer, OptimizerConfig, Sgd, VarStore}, Device, Kind, Tensor};
+pub use serde::{Deserialize, Serialize};
 use crate::secure_dp_utils::{DPMechanism,secret_share_weights,encrypt_share,generate_fernet_key};
 
 // Struct to represent weight updates sent to the server.

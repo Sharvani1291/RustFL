@@ -66,3 +66,20 @@ pub fn encrypt_share(share: &str, key: &str) -> Result<Vec<u8>, String> {
 pub fn generate_fernet_key() -> String{
     Fernet::generate_key()
 }
+
+// Federated averaging on encrypted weights (this example is simplified)
+pub fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
+    let mut aggregated_weights = Vec::new();
+
+    // Perform simple aggregation (just for demonstration)
+    for i in 0..weights_updates[0].len() {
+        let encrypted_sum = weights_updates
+            .iter()
+            .fold(weights_updates[0][i].clone(), |sum, client_weights| {
+                sum + &client_weights[i] // Simplified string concatenation
+            });
+        aggregated_weights.push(encrypted_sum);
+    }
+
+    aggregated_weights
+}

@@ -1,9 +1,10 @@
-use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
-use serde::{Deserialize, Serialize};
-use log::info;
-use tch::{nn, nn::Module, nn::OptimizerConfig, Tensor};
-use std::sync::{Arc, Mutex};
-use reqwest::Response;
+pub use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
+pub use serde::{Deserialize, Serialize};
+pub use log::info;
+pub use tch::{nn, nn::Module, nn::OptimizerConfig, Tensor};
+pub use std::sync::{Arc, Mutex};
+pub use reqwest::Response;
+use crate::secure_dp_utils::fed_avg_encrypted;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WeightsUpdate {
@@ -19,6 +20,18 @@ pub struct AppState {
     current_model_version: Mutex<usize>,
     client_updates: Mutex<Vec<WeightsUpdate>>,
     global_model: Mutex<nn::Sequential>,
+}
+impl AppState{
+    pub fn default() -> Self{
+        let vs = nn::VarStore::new(tch::Device::Cpu);
+        let global_model = create_model(&vs.root());
+        AppState {
+            aggregation_goal: 1,
+            current_model_version: Mutex::new(0),
+            client_updates: Mutex::new(Vec::new()),
+            global_model: Mutex::new(global_model)
+        }
+    }
 }
 
 // Simple CNN using tch-rs (Rust bindings for PyTorch)
@@ -84,21 +97,4 @@ pub async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppS
             )
         }))
     }
-}
-
-// Federated averaging on encrypted weights (this example is simplified)
-pub fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
-    let mut aggregated_weights = Vec::new();
-
-    // Perform simple aggregation (just for demonstration)
-    for i in 0..weights_updates[0].len() {
-        let encrypted_sum = weights_updates
-            .iter()
-            .fold(weights_updates[0][i].clone(), |sum, client_weights| {
-                sum + &client_weights[i] // Simplified string concatenation
-            });
-        aggregated_weights.push(encrypted_sum);
-    }
-
-    aggregated_weights
 }
