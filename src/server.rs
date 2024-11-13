@@ -15,6 +15,7 @@ struct WeightsUpdate {
 // Global state for model version and client updates
 struct AppState {
     aggregation_goal: usize,
+    vs: VarStore,
     current_model_version: Mutex<usize>,
     client_updates: Mutex<Vec<WeightsUpdate>>,
     global_model: Mutex<nn::Sequential>,
@@ -46,6 +47,20 @@ fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
     }
 
     aggregated_weights
+}
+
+async fn init_app_state() -> web::Data<AppState> {
+    // Initialize VarStore and other fields as needed
+    let vs = VarStore::new(tch::Device::Cpu);
+    
+    // Initialize your model and register it with vs
+    let global_model = YourModelType::new(&vs.root()); // Make sure YourModelType is registered to vs
+
+    web::Data::new(AppState {
+        vs,
+        global_model: Mutex::new(global_model),
+        current_model_version: Mutex::new(1),
+    })
 }
 
 #[get("/get_model")]
