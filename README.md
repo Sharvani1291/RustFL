@@ -132,6 +132,7 @@ Train the local model.
 Split the updated weights into shares using Shamir’s secret sharing mechanism.
 Apply Differential Privacy (add noise) to each share.
 Send noisy shares to different servers.
+Apply Differential Privacy (add noise) to share.
 
 Server:
 
@@ -139,3 +140,16 @@ Receive noisy shares from clients.
 Perform aggregation using SMPC technique.
 Reconstruct the global model from the aggregated shares.
 Update the global model with new weights.
+Implemented aggregation method for the encrypted weights.
+
+
+## Project Flow for Release3
+
+Established server and client connection.
+Implemented transferring of encrypted noisy shares from client to server.
+Federated Learning end-to-end flow is implemented.
+
+## Final Release tasks
+
+Create crate for all the functionalities we have used.
+Prepare the documentation.
