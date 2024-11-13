@@ -49,20 +49,6 @@ fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
     aggregated_weights
 }
 
-async fn init_app_state() -> web::Data<AppState> {
-    // Initialize VarStore and other fields as needed
-    let vs = VarStore::new(tch::Device::Cpu);
-    
-    // Initialize your model and register it with vs
-    let global_model = YourModelType::new(&vs.root()); // Make sure YourModelType is registered to vs
-
-    web::Data::new(AppState {
-        vs,
-        global_model: Mutex::new(global_model),
-        current_model_version: Mutex::new(1),
-    })
-}
-
 #[get("/get_model")]
 async fn get_model(data: web::Data<AppState>) -> impl Responder {
     let vs = &data.vs;
@@ -134,6 +120,7 @@ async fn main() -> std::io::Result<()> {
     let global_model = create_model(&vs.root());
 
     let state = web::Data::new(AppState {
+        vs,
         aggregation_goal: 1,
         current_model_version: Mutex::new(0),
         client_updates: Mutex::new(Vec::new()),
@@ -150,3 +137,4 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+
