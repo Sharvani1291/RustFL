@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Sharvani Chelumalla","Sai Pranavi Reddy Patlolla","Sainath Talakanti"]
 documentation = "A model of Federated Learning using Rust"
-readme = "README.md"
-repository = "https://github.com/Sharvani1291/RustFL"
 license = "MIT"
+repository = "https://github.com/Sharvani1291/RustFL"
+readme = "README.md"
 keywords = ["federated","noise","client","server","dp"]
 include = ["src/*", "Cargo.toml"]
 
