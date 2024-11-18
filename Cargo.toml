@@ -11,6 +11,7 @@ keywords = ["federated","noise","client","server","dp"]
 include = ["src/*", "Cargo.toml"]
 
 [dependencies]
+rustfl = "0.1.0"
 #client-only
 reqwest = { version = "0.12.7", features = ["json"] } #HTTP requests - High Level
 rand="0.8.5" #Random number generator

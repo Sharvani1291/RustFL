@@ -6,6 +6,7 @@ pub use tch::{kind, nn::{self, Conv2D, Linear, Module, Optimizer, OptimizerConfi
 pub use serde::{Deserialize, Serialize};
 use crate::secure_dp_utils::{DPMechanism,secret_share_weights,encrypt_share,generate_fernet_key};
 
+//Implemented by Sharvani Chelumalla
 // Struct to represent weight updates sent to the server.
 #[derive(Serialize, Deserialize)]
 pub struct WeightsUpdate {
@@ -16,6 +17,7 @@ pub struct WeightsUpdate {
     pub model_version: usize,
 }
 
+//Implemented by Sharvani Chelumalla
 pub struct Config {
     pub learning_rate: f64,
     pub batch_size: usize,
@@ -25,6 +27,7 @@ pub struct Config {
     pub epsilon: f64,
 }
 
+//Implemented by Sharvani Chelumalla
 impl Config {
     pub fn default() -> Self {
         Config {
@@ -38,6 +41,7 @@ impl Config {
     }
 }
 
+//Implemented by Sharvani Chelumalla
 // Define the SimpleCNN model structure.
 #[derive(Debug)]
 pub struct SimpleCNN {
@@ -47,7 +51,7 @@ pub struct SimpleCNN {
     fc2: Linear,
 }
 
-
+//Implemented by Sharvani Chelumalla
 impl SimpleCNN {
     pub fn new(vs: &nn::Path) -> SimpleCNN {
         let conv1 = nn::conv2d(vs, 1, 32, 3, Default::default());
@@ -63,6 +67,7 @@ impl SimpleCNN {
         }
     }
 
+    //Implemented by Sharvani Chelumalla
     pub fn forward(&self, xs: &Tensor) -> Tensor {
         let xs = xs.view([-1, 1, 28, 28]); // Assuming batch size can vary
         //info!("Input shape: {:?}", xs.size());
@@ -87,6 +92,7 @@ impl SimpleCNN {
     }
 }
 
+//Implemented by Sainath Talaknati
 // Function to load and normalize training data.
 pub fn get_train_data(data_dir: String) -> Vec<(Tensor, Tensor)> {
     #[derive(Debug)]
@@ -150,6 +156,7 @@ pub fn get_train_data(data_dir: String) -> Vec<(Tensor, Tensor)> {
     //train_dataset
 }
 
+//Implemented by Sainath Talaknati
 // Asynchronously start the training process.
 pub async fn start_training(
     train_loader: Vec<(Tensor, Tensor)>,
@@ -185,6 +192,7 @@ pub async fn start_training(
 
 }
 
+//Implemented by Sainath Talaknati
 // Asynchronously fetch the global model from the server.
 pub async fn fetch_global_model<'a>(model: &'a SimpleCNN,get_url: &str) -> Result<&'a SimpleCNN, reqwest::Error> {
     let client = Client::new();
@@ -212,6 +220,7 @@ pub async fn fetch_global_model<'a>(model: &'a SimpleCNN,get_url: &str) -> Resul
     }
 }
 
+//Implemented by Sainath Talaknati
 // Function to train the local model.
 pub fn train_local_model(
     train_loader: &Vec<(Tensor, Tensor)>,
@@ -262,6 +271,7 @@ pub fn train_local_model(
 
 }
 
+//Implemented by Sainath Talaknati
 // Asynchronously send local model weights to the server.
 pub async fn send_local_model_weights(
     weights: Vec<f64>,

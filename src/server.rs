@@ -6,6 +6,7 @@ pub use std::sync::{Arc, Mutex};
 pub use reqwest::Response;
 use crate::secure_dp_utils::fed_avg_encrypted;
 
+//Implemented by Sharvani Chelumalla
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WeightsUpdate {
     model_weights: Vec<String>,
@@ -14,6 +15,7 @@ pub struct WeightsUpdate {
     model_version: usize,
 }
 
+//Implemented by Sai Pranavi Reddy Patlolla
 // Global state for model version and client updates
 pub struct AppState {
     aggregation_goal: usize,
@@ -21,6 +23,7 @@ pub struct AppState {
     client_updates: Mutex<Vec<WeightsUpdate>>,
     global_model: Mutex<nn::Sequential>,
 }
+//Implemented by Sai Pranavi Reddy Patlolla
 impl AppState{
     pub fn default() -> Self{
         let vs = nn::VarStore::new(tch::Device::Cpu);
@@ -34,6 +37,7 @@ impl AppState{
     }
 }
 
+//Implemented by Sharvani Chelumalla
 // Simple CNN using tch-rs (Rust bindings for PyTorch)
 pub fn create_model(vs: &nn::Path) -> nn::Sequential {
     nn::seq()
@@ -45,6 +49,7 @@ pub fn create_model(vs: &nn::Path) -> nn::Sequential {
         .add(nn::linear(vs, 128, 10, Default::default()))
 }
 
+//Implemented by Sai Pranavi Reddy Patlolla
 #[get("/get_model")]
 pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
     let global_model = data.global_model.lock().unwrap();
@@ -62,6 +67,7 @@ pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
     }))
 }
 
+//Implemented by Sai Pranavi Reddy Patlolla
 #[post("/update_model")]
 pub async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppState>) -> impl Responder {
     info!("Received model update from client with loss: {}",update.loss);

@@ -4,6 +4,7 @@ use RustFL::client::{WeightsUpdate, Config, SimpleCNN, Client, Value,
                      Device, Kind, Tensor,error, info, warn,Deserialize, Serialize, Debug};
 use RustFL::secure_dp_utils::{DPMechanism,generate_fernet_key,secret_share_weights,encrypt_share};
 
+//Implemented by Sainath Talaknati & Sharvani Chelumalla
 // Main function to initialize and start the training process.
 #[tokio::main]
 pub async fn main() {

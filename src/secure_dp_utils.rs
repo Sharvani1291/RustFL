@@ -2,10 +2,12 @@ use fernet::Fernet;
 use rand::{thread_rng, Rng};
 use rand_distr::{Normal, Distribution};
 
+//Implemented by Sharvani Chelumalla
 pub struct DPMechanism {
     epsilon: f64,
     sensitivity: f64
 }
+//Implemented by Sharvani Chelumalla
 impl DPMechanism {
     pub fn new(epsilon: f64, sensitivity: f64) -> DPMechanism {
         DPMechanism {
@@ -13,6 +15,7 @@ impl DPMechanism {
             sensitivity
         }
     }
+    //Implemented by Sharvani Chelumalla
     pub fn add_noise(&self, weights: &Vec<f64>) -> Vec<f64> {
         let noise_std = self.sensitivity / self.epsilon;
         let normal_dist = Normal::new(0.0, noise_std).unwrap();
@@ -26,6 +29,7 @@ impl DPMechanism {
     }
 }
 
+//Implemented by Sharvani Chelumalla
 pub fn secret_share_weights(weights: Vec<f64>, num_shares: usize, threshold: usize, _noise_level: f64) -> Vec<Vec<f64>> {
     // Create a vector of vectors to hold shares for each shareholder
     let mut shares = vec![vec![]; num_shares];
@@ -53,6 +57,7 @@ pub fn secret_share_weights(weights: Vec<f64>, num_shares: usize, threshold: usi
     shares  // Return the shares as a vector of vectors
 }
 
+//Implemented by Sainath Talaknati
 pub fn encrypt_share(share: &str, key: &str) -> Result<Vec<u8>, String> {
     // Create a Fernet instance from the provided key
     let fernet = Fernet::new(key).ok_or("Invalid Key");
@@ -63,10 +68,12 @@ pub fn encrypt_share(share: &str, key: &str) -> Result<Vec<u8>, String> {
     Ok(encrypted_share.into())
 }
 
+//Implemented by Sainath Talaknati
 pub fn generate_fernet_key() -> String{
     Fernet::generate_key()
 }
 
+//Implemented by Sai Pranavi Reddy Patlolla
 // Federated averaging on encrypted weights (this example is simplified)
 pub fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
     let mut aggregated_weights = Vec::new();
