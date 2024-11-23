@@ -1,6 +1,6 @@
 [package]
 name = "RustFL"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Sharvani Chelumalla","Sai Pranavi Reddy Patlolla","Sainath Talakanti"]
 description = "A model of Federated Learning using Rust"
@@ -9,6 +9,7 @@ repository = "https://github.com/Sharvani1291/RustFL"
 readme = "README.md"
 keywords = ["federated","noise","client","server","dp"]
 include = ["src/*", "Cargo.toml"]
+documentation = "file:///Users/sai/Documents/Third_Sem/SP/ABC/RustFL/target/doc/RustFL/index.html"
 
 [dependencies]
 #rustfl = "0.1.0"
