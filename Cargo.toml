@@ -10,8 +10,18 @@ readme = "README.md"
 keywords = ["federated","noise","client","server","dp"]
 include = ["src/*", "Cargo.toml"]
 
+[package.metadata.docs.rs]
+no-default-features = true
+features = ["docs-only"]
+
+[features]
+default = ["tch"]  # Enable `tch` by default
+docs-only = []     # Documentation-only build without `tch`
+
+
+
 [dependencies]
-#rustfl = "0.1.0"
+#rustfl = "0.2.0"
 #client-only
 reqwest = { version = "0.12.7", features = ["json"] } #HTTP requests - High Level
 rand="0.8.5" #Random number generator
@@ -22,7 +32,7 @@ base64="0.22.1"
 
 #client-server
 #tch = "0.18.0"#Pytorch C++ API(libtorch)
-tch = "0.15.0"
+tch = { version = "0.15.0", optional = true }
 serde = { version = "1.0", features = ["derive"] } #Serialize/Deserialize data
 serde_json = "1.0"
 log = "0.4"#Logging replace in python
