@@ -9,7 +9,6 @@ repository = "https://github.com/Sharvani1291/RustFL"
 readme = "README.md"
 keywords = ["federated","noise","client","server","dp"]
 include = ["src/*", "Cargo.toml"]
-documentation = "file:///Users/sai/Documents/Third_Sem/SP/ABC/RustFL/target/doc/RustFL/index.html"
 
 [dependencies]
 #rustfl = "0.1.0"
