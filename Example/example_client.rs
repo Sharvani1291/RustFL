@@ -32,7 +32,7 @@ pub async fn main() {
     };
 
     // Load the training data.
-    let train_loader = get_train_data("mnist_data/MNIST/raw".to_string());
+    let train_loader = get_train_data("Example/mnist_data/MNIST/raw".to_string());
 
     let encryption_key = generate_fernet_key();
 

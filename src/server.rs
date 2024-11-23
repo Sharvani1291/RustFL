@@ -7,24 +7,26 @@ pub use reqwest::Response;
 use crate::secure_dp_utils::fed_avg_encrypted;
 
 //Implemented by Sharvani Chelumalla
+/// Struct to represent weight updates sent to the server.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WeightsUpdate {
-    model_weights: Vec<String>,
-    num_samples: usize,
-    loss: f64,
-    model_version: usize,
+    pub model_weights: Vec<String>,
+    pub num_samples: usize,
+    pub loss: f64,
+    pub model_version: usize,
 }
 
 //Implemented by Sai Pranavi Reddy Patlolla
-// Global state for model version and client updates
+/// Global state for model version and client updates
 pub struct AppState {
-    aggregation_goal: usize,
-    current_model_version: Mutex<usize>,
-    client_updates: Mutex<Vec<WeightsUpdate>>,
-    global_model: Mutex<nn::Sequential>,
+    pub aggregation_goal: usize,
+    pub current_model_version: Mutex<usize>,
+    pub client_updates: Mutex<Vec<WeightsUpdate>>,
+    pub global_model: Mutex<nn::Sequential>,
 }
 //Implemented by Sai Pranavi Reddy Patlolla
 impl AppState{
+    /// Default global state if not defined by user
     pub fn default() -> Self{
         let vs = nn::VarStore::new(tch::Device::Cpu);
         let global_model = create_model(&vs.root());
@@ -38,7 +40,7 @@ impl AppState{
 }
 
 //Implemented by Sharvani Chelumalla
-// Simple CNN using tch-rs (Rust bindings for PyTorch)
+/// A CNN construction using max-pooling and activation functions
 pub fn create_model(vs: &nn::Path) -> nn::Sequential {
     nn::seq()
         .add(nn::conv2d(vs, 1, 32, 3, nn::ConvConfig::default()))
@@ -51,6 +53,7 @@ pub fn create_model(vs: &nn::Path) -> nn::Sequential {
 
 //Implemented by Sai Pranavi Reddy Patlolla
 #[get("/get_model")]
+/// Stores the global model weights such that client can fetch the global weights
 pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
     let global_model = data.global_model.lock().unwrap();
     /*let model_state_dict = global_model
@@ -69,6 +72,7 @@ pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
 
 //Implemented by Sai Pranavi Reddy Patlolla
 #[post("/update_model")]
+/// Updates the global model each time client sends the updated version of weights
 pub async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppState>) -> impl Responder {
     info!("Received model update from client with loss: {}",update.loss);
 
