@@ -1,6 +1,6 @@
 [package]
 name = "RustFL"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Sharvani Chelumalla","Sai Pranavi Reddy Patlolla","Sainath Talakanti"]
 description = "A model of Federated Learning using Rust"
