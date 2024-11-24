@@ -38,8 +38,8 @@ ENV LIBTORCH_USE_PYTORCH=1
 #ENV LIBTORCH=/usr/local/libtorch
 #ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:$LD_LIBRARY_PATH
 #COPY /Users/sai/Downloads/libtorch /usr/local/libtorch
-ENV DYLD_LIBRARY_PATH=/Users/sai/Downloads/libtorch/lib
-ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:$LD_LIBRARY_PATH
+ENV DYLD_LIBRARY_PATH=RustFL/libtorch/lib
+#ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:$LD_LIBRARY_PATH
 
 # Copy the current directory contents into the container
 COPY . .

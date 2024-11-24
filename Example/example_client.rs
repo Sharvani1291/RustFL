@@ -11,14 +11,7 @@ async fn main() {
     env_logger::init();
 
 
-    let config = Config::new(
-        learning_rate: 0.5,
-        batch_size: 128,
-        noise_level: 0.5,
-        num_rounds: 5,
-        sensitivity: 0.5,
-        epsilon: 1.5
-    );
+    let config = Config::new(0.5, 128, 0.5, 5, 0.5, 1.5);
 
     let device = if tch::Cuda::is_available() { Device::Cuda(0) } else { Device::Cpu };
     let vs = VarStore::new(device);

@@ -3,23 +3,10 @@
 version = 4
 
 [[package]]
-name = "Example"
-version = "0.1.0"
-dependencies = [
- "RustFL",
- "actix-web",
- "env_logger",
- "log",
- "serde_json",
- "tch",
- "tokio",
-]
-
-[[package]]
 name = "RustFL"
-version = "0.2.2"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5802fc2e11b71adad12452044fe053d8ef16b34406aa3a1e254dc506d7f14a6d"
+checksum = "833fe800c25a1f645d8a76a9727406aa56a1bf59ddc0dbdf9e2981ca58640b71"
 dependencies = [
  "actix-web",
  "base64",
@@ -32,6 +19,17 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "tch",
+ "tokio",
+]
+
+[[package]]
+name = "RustFL-fuzz"
+version = "0.1.0"
+dependencies = [
+ "RustFL",
+ "actix-web",
+ "libfuzzer-sys",
  "tch",
  "tokio",
 ]
@@ -336,6 +334,12 @@ name = "anyhow"
 version = "1.0.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4c95c10ba0b00a02636238b814946408b1322d5ac4760326e6fb8ec956d85775"
+
+[[package]]
+name = "arbitrary"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dde20b3d026af13f561bdd0f15edf01fc734f0dafcedbaf42bba506a9517f223"
 
 [[package]]
 name = "atomic-waker"
@@ -1210,6 +1214,16 @@ name = "libc"
 version = "0.2.164"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "433bfe06b8c75da9b2e3fbea6e5329ff87748f0b144ef75306e674c3f6f7c13f"
+
+[[package]]
+name = "libfuzzer-sys"
+version = "0.4.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b9569d2f74e257076d8c6bfa73fb505b46b851e51ddaecc825944aa3bed17fa"
+dependencies = [
+ "arbitrary",
+ "cc",
+]
 
 [[package]]
 name = "libm"

@@ -340,3 +340,82 @@ pub async fn send_local_model_weights(
         error!("Failed to send model update: {}", response.status());
     }
 }
+
+//Tests
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tch::{Device, Tensor};
+    use reqwest::StatusCode;
+
+    #[test]
+    fn test_default_config() {
+        let config = Config::default();
+        assert_eq!(config.learning_rate, 0.001);
+        assert_eq!(config.batch_size, 64);
+        assert_eq!(config.noise_level, 0.1);
+        assert_eq!(config.num_rounds, 3);
+        assert_eq!(config.sensitivity, 1.0);
+        assert_eq!(config.epsilon, 0.5);
+    }
+
+    #[test]
+    fn test_simple_cnn_forward() {
+        let vs = nn::VarStore::new(Device::Cpu);
+        let model = SimpleCNN::new(&vs.root());
+
+        // Create a dummy tensor (e.g., a single MNIST image with shape [1, 28, 28])
+        let input = Tensor::randn(&[1, 28, 28], (kind::Kind::Float, Device::Cpu));
+
+        let output = model.forward(&input);
+
+        // Assert that the output has the expected shape: [1, 10]
+        assert_eq!(output.size(), vec![1, 10]);
+    }
+
+    #[tokio::test]
+    async fn test_fetch_global_model() {
+        let model = SimpleCNN::new(&nn::VarStore::new(Device::Cpu).root());
+        let url = "http://localhost:8000/model"; // Change with actual server URL
+        let result = fetch_global_model(&model, url).await;
+
+        // Check if fetching the global model was successful
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_train_local_model() {
+        let vs = nn::VarStore::new(Device::Cpu);
+        let mut model = SimpleCNN::new(&vs.root());
+        let mut optimizer = Sgd::default().build(&vs, 0.001).unwrap();
+
+        // Dummy training data (batch_size = 2) - Corrected format
+        let dummy_data = vec![
+            (Tensor::randn(&[1, 28, 28], (kind::Kind::Float, Device::Cpu)), Tensor::randn(&[10], (kind::Kind::Float, Device::Cpu))),
+            (Tensor::randn(&[1, 28, 28], (kind::Kind::Float, Device::Cpu)), Tensor::randn(&[10], (kind::Kind::Float, Device::Cpu))),
+        ];
+
+        let criterion = |output: &Tensor, target: &Tensor| output.mse_loss(target, tch::Reduction::Mean);
+        let (avg_loss, _) = train_local_model(&dummy_data, &mut model, &mut optimizer, &criterion, Device::Cpu);
+
+        // Check that the average loss is a number (not NaN or Infinity)
+        assert!(avg_loss.is_finite());
+    }
+
+    #[tokio::test]
+    async fn test_send_local_model_weights() {
+        let weights = vec![0.5, 0.3, 0.8];
+        let loss_value = 0.2;
+        let model_version = 1;
+        let model = SimpleCNN::new(&nn::VarStore::new(Device::Cpu).root());
+        let encryption_key = "secret_key";  // Replace with actual encryption key
+        let device = Device::Cpu;
+        let get_url = "http://localhost:8000/get_model";  // Replace with actual URL
+        let post_url = "http://localhost:8000/post_model";  // Replace with actual URL
+
+        send_local_model_weights(weights, loss_value, model_version, &model, encryption_key, device, get_url, post_url).await;
+
+        // Here you could check if the server responded successfully
+        // For now, we will not check this as it's a mock call
+    }
+}
