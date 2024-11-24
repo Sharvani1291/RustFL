@@ -1,28 +1,30 @@
-The unified Rust crate we developed consolidates several core functionalities crucial for building a secure and privacy-preserving federated learning (FL) application. This crate includes:
+## Why Use RustFL for Federated Learning?
 
-1.	Model Training, Fetching, and Updating:
+  The RustFL crate is specifically designed for privacy-preserving federated learning. Its key features include:
+  
+  Differential Privacy:
+  
+  Implements Gaussian noise mechanisms for ensuring privacy in model updates, making it suitable for applications with sensitive data.
+  
+  Secure Aggregation:
+  
+  Includes functionality for secret sharing and encryption to safeguard model weights during transmission and aggregation.
+  
+  Efficient Model Management:
+  
+  Supports federated averaging and provides tools to manage global models seamlessly in distributed environments.
 
-Provides a standardized interface for starting local model training and retrieving the updated model weights from clients, facilitating seamless integration across different FL clients.
 
-On the server side, includes functions for receiving model weights from clients and updating the global model, ensuring continuous and effective learning based on the latest contributions from clients.
+## Running the Example
 
-2.	Secret Sharing:
+1. Build the Project:
 
-Implements secret sharing protocols to enable secure, decentralized data aggregation, ensuring that individual client data remains confidential even during collaborative learning.
+                                                 cargo build
 
-3.	Differential Privacy (DP) Mechanisms:
+2. Run the Client:
 
-Integrates DP techniques to add noise to the model updates, providing strong privacy guarantees and preventing inference attacks on the shared weights.
+                                                 cargo run --bin example_client
 
-4.	Encryption Layers:
+3. Run the Server:
 
-Offers robust encryption methods for securing model parameters during transmission, safeguarding against man-in-the-middle attacks.
-
-5.	Encrypted Federated Averaging (FedAvg):
-
-Supports an encrypted FedAvg protocol on the server side, allowing aggregation of model weights without decrypting them. This ensures that the server cannot access individual client updates directly, enhancing the overall security of the federated learning process.
-Application Development: With this unified crate, we can now build a federated learning application where clients use this crate to perform local training, apply differential privacy, and encrypt model updates before transmission. On the server side, the application leverages encrypted FedAvg functionality to aggregate these updates securely while also utilizing functions to fetch and update the global model dynamically. This modular and secure approach facilitates building scalable federated learning systems with enhanced privacy and security guarantees.
-
-## Application Development: 
-
-With this unified crate, we can now build a federated learning application where clients use this crate to perform local training, apply differential privacy, and encrypt model updates before transmission. On the server side, the application leverages encrypted FedAvg functionality to aggregate these updates securely while also utilizing functions to fetch and update the global model dynamically. This modular and secure approach facilitates building scalable federated learning systems with enhanced privacy and security guarantees.
+                                                 cargo run --bin example_server
