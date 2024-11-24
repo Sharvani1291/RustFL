@@ -1,3 +1,4 @@
+/************************************************************************************/
 pub use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
 pub use serde::{Deserialize, Serialize};
 pub use log::info;
@@ -55,7 +56,7 @@ pub fn create_model(vs: &nn::Path) -> nn::Sequential {
 #[get("/get_model")]
 /// Stores the global model weights such that client can fetch the global weights
 pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
-    let global_model = data.global_model.lock().unwrap();
+    let _global_model = data.global_model.lock().unwrap();
     /*let model_state_dict = global_model
         .parameters()
         .iter()
@@ -127,6 +128,7 @@ pub struct WeightsUpdate {
     pub num_samples: usize,
     pub loss: f64,
     pub model_version: usize,
+    pub var_store: nn::VarStore,
 }
 
 //Implemented by Sai Pranavi Reddy Patlolla
@@ -136,18 +138,20 @@ pub struct AppState {
     pub current_model_version: Mutex<usize>,
     pub client_updates: Mutex<Vec<WeightsUpdate>>,
     pub global_model: Mutex<nn::Sequential>,
+    pub var_store: nn::VarStore,
 }
 //Implemented by Sai Pranavi Reddy Patlolla
 impl AppState{
     /// Default global state if not defined by user
-    pub fn default() -> Self{
+    pub fn default() -> Self {
         let vs = nn::VarStore::new(tch::Device::Cpu);
         let global_model = create_model(&vs.root());
         AppState {
             aggregation_goal: 1,
             current_model_version: Mutex::new(0),
             client_updates: Mutex::new(Vec::new()),
-            global_model: Mutex::new(global_model)
+            global_model: Mutex::new(global_model),
+            var_store: vs, // Initialize VarStore
         }
     }
 }
@@ -167,29 +171,59 @@ pub fn create_model(vs: &nn::Path) -> nn::Sequential {
 //Implemented by Sai Pranavi Reddy Patlolla
 #[get("/get_model")]
 /// Stores the global model weights such that client can fetch the global weights
+/// Stores the global model weights such that the client can fetch the global weights
 pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
-    let global_model = data.global_model.lock().unwrap();
-    let model_state_dict = global_model
-        .parameters()
-        .iter()
-        .map(|(key, value)| {
-            let tensor = value
-                .to_kind(tch::Kind::Float) // Ensure correct dtype
-                .to_device(tch::Device::Cpu) // Ensure tensor is on CPU
-                .contiguous(); // Ensure tensor is contiguous
+    let var_store = &data.var_store; // Accessing the VarStore
+    let parameters = var_store.trainable_variables(); // Getting trainable parameters
+    println!("{:?}", parameters);
 
-            let vec = tensor.to_vec().unwrap_or_else(|_| vec![]); // Handle possible errors gracefully
-            (key.clone(), vec)
+    let model_state_dict = parameters
+        .into_iter()
+        .map(|(key, tensor)| {
+            let processed_tensor:Tensor = tensor
+                .to_kind(tch::Kind::Float)
+                .to_device(tch::Device::Cpu)
+                .contiguous();
+
+            let vec = processed_tensor
+                .view(-1) // Flatten the tensor into a 1D shape
+                .data::<f32>() // Extract the data as f32
+                .to_vec(); // Convert to a Vec<f32>
+
+            (key, vec)
         })
         .collect::<Vec<_>>();
-
-    let model_state_dict = "Model State Dict".to_string();
 
     HttpResponse::Ok().json(serde_json::json!({
         "model_state_dict": model_state_dict,
         "model_version": *data.current_model_version.lock().unwrap()
     }))
 }
+
+
+// pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
+//     let global_model = data.global_model.lock().unwrap();
+//     let model_state_dict = global_model
+//         .parameters()
+//         .iter()
+//         .map(|(key, value)| {
+//             let tensor = value
+//                 .to_kind(tch::Kind::Float) // Ensure correct dtype
+//                 .to_device(tch::Device::Cpu) // Ensure tensor is on CPU
+//                 .contiguous(); // Ensure tensor is contiguous
+
+//             let vec = tensor.to_vec().unwrap_or_else(|_| vec![]); // Handle possible errors gracefully
+//             (key.clone(), vec)
+//         })
+//         .collect::<Vec<_>>();
+
+//     let model_state_dict = "Model State Dict".to_string();
+
+//     HttpResponse::Ok().json(serde_json::json!({
+//         "model_state_dict": model_state_dict,
+//         "model_version": *data.current_model_version.lock().unwrap()
+//     }))
+// }
 
 //Implemented by Sai Pranavi Reddy Patlolla
 #[post("/update_model")]

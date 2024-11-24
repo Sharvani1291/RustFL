@@ -4,7 +4,7 @@ pub use reqwest::Client;
 pub use serde_json::Value;
 pub use tch::{kind, nn::{self, Conv2D, Linear, Module, Optimizer, OptimizerConfig, Sgd, VarStore}, Device, Kind, Tensor};
 pub use serde::{Deserialize, Serialize};
-use crate::secure_dp_utils::{DPMechanism,secret_share_weights,encrypt_share,generate_fernet_key};
+use crate::secure_dp_utils::{DPMechanism,secret_share_weights,encrypt_share};
 
 //Implemented by Sharvani Chelumalla
 /// Struct to represent weight updates sent to the server.
@@ -30,6 +30,24 @@ pub struct Config {
 
 //Implemented by Sharvani Chelumalla
 impl Config {
+
+    ///User defined configurations
+    pub fn new( learning_rate: f64,
+                batch_size: usize,
+                noise_level: f64,
+                num_rounds: usize,
+                sensitivity: f64,
+                epsilon: f64,) -> Self{
+        Config{
+            learning_rate,
+            batch_size,
+            noise_level,
+            num_rounds,
+            sensitivity,
+            epsilon
+        }
+    }
+
     /// Default configuration values if not defined by user
     pub fn default() -> Self {
         Config {
@@ -211,7 +229,7 @@ pub async fn fetch_global_model<'a>(model: &'a SimpleCNN,get_url: &str) -> Resul
         let data: Value = response.json().await?;
 
         let _global_model_weights = data.get("model_state_dict").unwrap();
-        let model_version = data.get("model_version").cloned();
+        let _model_version = data.get("model_version").cloned();
 
         // Load the fetched global model weights into the model.
         /*******************

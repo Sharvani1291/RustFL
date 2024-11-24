@@ -1,5 +1,5 @@
 [package]
-name = "RustFL"
+name = "rustfl"
 version = "0.2.1"
 edition = "2021"
 authors = ["Sharvani Chelumalla","Sai Pranavi Reddy Patlolla","Sainath Talakanti"]
@@ -42,9 +42,9 @@ tokio = { version = "1", features = ["full"] } #Asynchronous I/O backed applicat
 #server-only
 actix-web = "4.9.0"
 
-[[bin]]
-name = "example_client"
-path = "Example/example_client.rs"
-[[bin]]
-name = "example_server"
-path = "Example/example_server.rs"
+#[[bin]]
+#name = "example_client"
+#path = "Example/example_client.rs"
+#[[bin]]
+#name = "example_server"
+#path = "Example/example_server.rs"

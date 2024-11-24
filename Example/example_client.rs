@@ -7,22 +7,23 @@ use RustFL::secure_dp_utils::{DPMechanism,generate_fernet_key,secret_share_weigh
 //Implemented by Sainath Talaknati & Sharvani Chelumalla
 // Main function to initialize and start the training process.
 #[tokio::main]
-pub async fn main() {
+async fn main() {
     env_logger::init();
 
-    let config = Config{
+
+    let config = Config::new(
         learning_rate: 0.5,
         batch_size: 128,
         noise_level: 0.5,
         num_rounds: 5,
         sensitivity: 0.5,
-        epsilon: 1.5,
-    };
+        epsilon: 1.5
+    );
 
     let device = if tch::Cuda::is_available() { Device::Cuda(0) } else { Device::Cpu };
     let vs = VarStore::new(device);
     let mut simple_cnn_model = SimpleCNN::new(&vs.root());
-    let mut optimizer = Sgd::default().build(&vs, Config::default().learning_rate).unwrap();
+    let mut optimizer = Sgd::default().build(&vs, config.learning_rate).unwrap();
 
     // Define the loss function.
     let criterion = |output: &Tensor, target: &Tensor| {
