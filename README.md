@@ -62,38 +62,38 @@ log: To log important information, warnings, and errors during the process.
 
 4. for OpenSSL error: follow the steps
 
-                                                        Download openssl-3.4.0.tar.gz from github and extract it
-                                                        In the terminal, follow:
-                                                        cd /Absolute/path/to/openssl-3.4.0
-                                                        ./config --prefix=$HOME/openssl --openssldir=$HOME/openssl
-                                                        make
-                                                        make install
-                                                        export OPENSSL_DIR=$HOME/openssl
-                                                        export OPENSSL_LIB_DIR=$OPENSSL_DIR/lib
-                                                        export OPENSSL_INCLUDE_DIR=$OPENSSL_DIR/include
-                                                        export PKG_CONFIG_PATH=$OPENSSL_LIB_DIR/pkgconfig
-                                                        source ~/.bashrc
-                                                        ls $OPENSSL_LIB_DIR
-                                                        ls $OPENSSL_INCLUDE_DIR
-                                                        cd /Absolute/path/to/RustFL
-                                                        cargo clean
-                                                        cargo build
+                                        Download openssl-3.4.0.tar.gz from github and extract it
+                                        In the terminal, follow:
+                                        cd /Absolute/path/to/openssl-3.4.0
+                                        ./config --prefix=$HOME/openssl --openssldir=$HOME/openssl
+                                        make
+                                        make install
+                                        export OPENSSL_DIR=$HOME/openssl
+                                        export OPENSSL_LIB_DIR=$OPENSSL_DIR/lib
+                                        export OPENSSL_INCLUDE_DIR=$OPENSSL_DIR/include
+                                        export PKG_CONFIG_PATH=$OPENSSL_LIB_DIR/pkgconfig
+                                        source ~/.bashrc
+                                        ls $OPENSSL_LIB_DIR
+                                        ls $OPENSSL_INCLUDE_DIR
+                                        cd /Absolute/path/to/RustFL
+                                        cargo clean
+                                        cargo build
 
 5. For torch not found error, follow following in terminal:
 
-                                        python3 --version #verify the version and update
-                                        python3 -m pip install --upgrade pip
-                                        pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117
-                                        source /path/to/venv/bin/activate
-                                        export LIBTORCH_USE_PYTORCH=1
+                                    python3 --version #verify the version and update
+                                    python3 -m pip install --upgrade pip
+                                    pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117
+                                    source /path/to/venv/bin/activate
+                                    export LIBTORCH_USE_PYTORCH=1
 
 6. For .dyld file not found error:
 
-                                                        export DYLD_LIBRARY_PATH=/Absolute/path/to/libtorch/lib
+                                        export DYLD_LIBRARY_PATH=/Absolute/path/to/libtorch/lib
 
 7. To run client code with logInfo:
 
-                                                        RUST_LOG=info cargo run --bin client
+                                        RUST_LOG=info cargo run --bin client
 
 8. For Amd architecture:
 
@@ -104,21 +104,21 @@ log: To log important information, warnings, and errors during the process.
 
 1. Build the Project:
 
-                                                           cargo build
+                                                   cargo build
 
 2. Run the Client:
 
-                                                           cargo run --bin client
+                                                   cargo run --bin client
 
 3. Run the Server:
 
-                                                           cargo run --bin server
+                                                   cargo run --bin server
 
 ## Logging:
 
 You can enable detailed logging with:
 
-                                                           RUST_LOG=info cargo run --bin client
+                                                   RUST_LOG=info cargo run --bin client
                                                            
 
 We have also developed an application which uses our crate: [https://github.com/Sharvani1291/RustFL/blob/main/Example/README.md]
