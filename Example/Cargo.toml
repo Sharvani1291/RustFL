@@ -4,13 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-RustFL = "0.2.2"
+RustFL = "0.2.0"
 actix-web = "4.9.0"
 log = "0.4"
 serde_json = "1.0.132"
 env_logger = "0.11.5"
 tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }#Logging replace in python
 tch = "0.15.0"
+reqwest = { version = "0.12.7", features = ["json"] } #HTTP requests - High Level
 
 [[bin]]
 name = "example_client"

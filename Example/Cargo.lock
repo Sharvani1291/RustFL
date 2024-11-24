@@ -10,6 +10,7 @@ dependencies = [
  "actix-web",
  "env_logger",
  "log",
+ "reqwest",
  "serde_json",
  "tch",
  "tokio",

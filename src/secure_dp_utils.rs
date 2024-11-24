@@ -5,8 +5,8 @@ use rand_distr::{Normal, Distribution};
 //Implemented by Sharvani Chelumalla
 /// Structure for noise parameters
 pub struct DPMechanism {
-    epsilon: f64,
-    sensitivity: f64
+    pub(crate) epsilon: f64,
+    pub(crate) sensitivity: f64
 }
 //Implemented by Sharvani Chelumalla
 impl DPMechanism {

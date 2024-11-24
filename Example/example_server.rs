@@ -1,8 +1,9 @@
+use std::sync::{Arc, Mutex};
 use actix_web::{web, HttpResponse, Responder};
 use log::info;
 use RustFL::secure_dp_utils::fed_avg_encrypted;
-use RustFL::server::{get,  post, App, AppState, HttpServer, WeightsUpdate};
-
+use RustFL::server::{get, post, App, AppState, HttpServer, WeightsUpdate,create_model};
+use tch::nn;
 //Implemented by Sai Pranavi Reddy Patlolla
 
 #[get("/get_model")]
@@ -61,12 +62,22 @@ pub async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppS
 }
 
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
+pub async fn main() -> std::io::Result<()> {
     env_logger::init(); // Initialize logging
+
+    let vs = Arc::new(nn::VarStore::new(tch::Device::Cpu));
+    let global_model = create_model(&vs.root());
+
+    let state = web::Data::new(AppState {
+        aggregation_goal: 1,
+        current_model_version: Mutex::new(0),
+        client_updates: Mutex::new(Vec::new()),
+        global_model: Mutex::new(global_model),
+    });
 
     HttpServer::new(move || {
         App::new()
-            .app_data(AppState::default())
+            .app_data(state.clone())
             .service(get_model)
             .service(update_model)
     })

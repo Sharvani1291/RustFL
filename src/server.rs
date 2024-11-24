@@ -29,7 +29,7 @@ pub struct AppState {
 impl AppState{
     /// Default global state if not defined by user
     pub fn default() -> Self{
-        let vs = nn::VarStore::new(tch::Device::Cpu);
+        let vs = Arc::new(nn::VarStore::new(tch::Device::Cpu));
         let global_model = create_model(&vs.root());
         AppState {
             aggregation_goal: 1,

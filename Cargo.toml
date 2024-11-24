@@ -1,10 +1,11 @@
 [package]
 name = "RustFL"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 authors = ["Sharvani Chelumalla","Sai Pranavi Reddy Patlolla","Sainath Talakanti"]
 description = "A model of Federated Learning using Rust"
 license = "MIT"
+documentation = "https://docs.rs/crate/RustFL/0.3.0"
 repository = "https://github.com/Sharvani1291/RustFL"
 readme = "README.md"
 keywords = ["federated","noise","client","server","dp"]
@@ -42,9 +43,3 @@ tokio = { version = "1", features = ["full"] } #Asynchronous I/O backed applicat
 #server-only
 actix-web = "4.9.0"
 
-#[[bin]]
-#name = "example_client"
-#path = "Example/example_client.rs"
-#[[bin]]
-#name = "example_server"
-#path = "Example/example_server.rs"
