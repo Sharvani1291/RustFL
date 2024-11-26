@@ -1,3 +1,5 @@
+#Fuzz Cargo toml file contributed by Sharvani Chelumalla
+
 [package]
 name = "RustFL-fuzz"
 version = "0.1.0"

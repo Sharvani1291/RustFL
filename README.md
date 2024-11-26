@@ -54,71 +54,76 @@ log: To log important information, warnings, and errors during the process.
 
 ## Requirements
 
-1. Arm architecture required
+1. AMD architecture required
 
-2. latest libtorch file need to be downloaded from official pytorch website
+2. libtorch file of version 2.2.0 is required(Can doenload from here :[https://download.pytorch.org/libtorch/cpu/libtorch-macos-x86_64-2.2.0.zip])
 
-3. pytorch 2.5.0 version is required
+3. pytorch of version 2.2.0 version is required
 
 4. for OpenSSL error: follow the steps
 
-                                        Download openssl-3.4.0.tar.gz from github and extract it
-                                        In the terminal, follow:
-                                        cd /Absolute/path/to/openssl-3.4.0
-                                        ./config --prefix=$HOME/openssl --openssldir=$HOME/openssl
-                                        make
-                                        make install
-                                        export OPENSSL_DIR=$HOME/openssl
-                                        export OPENSSL_LIB_DIR=$OPENSSL_DIR/lib
-                                        export OPENSSL_INCLUDE_DIR=$OPENSSL_DIR/include
-                                        export PKG_CONFIG_PATH=$OPENSSL_LIB_DIR/pkgconfig
-                                        source ~/.bashrc
-                                        ls $OPENSSL_LIB_DIR
-                                        ls $OPENSSL_INCLUDE_DIR
-                                        cd /Absolute/path/to/RustFL
-                                        cargo clean
-                                        cargo build
+                         Download openssl-3.4.0.tar.gz from github and extract it
+                         In the terminal, follow:
+                         cd /Absolute/path/to/openssl-3.4.0
+                         ./config --prefix=$HOME/openssl --openssldir=$HOME/openssl
+                         make
+                         make install
+                         export OPENSSL_DIR=$HOME/openssl
+                         export OPENSSL_LIB_DIR=$OPENSSL_DIR/lib
+                         export OPENSSL_INCLUDE_DIR=$OPENSSL_DIR/include
+                         export PKG_CONFIG_PATH=$OPENSSL_LIB_DIR/pkgconfig
+                         source ~/.bashrc
+                         ls $OPENSSL_LIB_DIR
+                         ls $OPENSSL_INCLUDE_DIR
+                         cd /Absolute/path/to/RustFL
+                         cargo clean
+                         cargo build
 
 5. For torch not found error, follow following in terminal:
 
-                                    python3 --version #verify the version and update
-                                    python3 -m pip install --upgrade pip
-                                    pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117
-                                    source /path/to/venv/bin/activate
-                                    export LIBTORCH_USE_PYTORCH=1
+                        python3 --version #verify the version and update
+                        python3 -m pip install --upgrade pip
+                        pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu117
+                        source /path/to/venv/bin/activate
+                        export LIBTORCH_USE_PYTORCH=1
 
 6. For .dyld file not found error:
 
-                                        export DYLD_LIBRARY_PATH=/Absolute/path/to/libtorch/lib
-
-7. To run client code with logInfo:
-
-                                        RUST_LOG=info cargo run --bin client
-
-8. For Amd architecture:
-
-    Pytorch 2.2.0 and tch 0.15.0 and appropriate libtorch file is required
+                      export DYLD_LIBRARY_PATH=/Absolute/path/to/libtorch/lib
 
 
 ## Running the System
 
 1. Build the Project:
 
-                                                   cargo build
+                           cargo build
 
-2. Run the Client:
+2. Run the Example server:
 
-                                                   cargo run --bin client
+                           cargo run --bin example_server
 
-3. Run the Server:
+3. Run the Example Client:
 
-                                                   cargo run --bin server
+                           cargo run --bin example client
+
+4. For Documentation:
+
+                        cargo doc --open
+
+5. To build fuzz:
+
+                           cargo fuzz build
+
+6. To Run fuzzing:
+
+                           cargo fuzz run fuzz_target_1
+
 
 ## Logging:
 
 You can enable detailed logging with:
 
-                                                   RUST_LOG=info cargo run --bin client
+                           RUST_LOG=info cargo run --bin bin_name
                                                            
 
 We have also developed an application which uses our crate: [https://github.com/Sharvani1291/RustFL/blob/main/Example/README.md]

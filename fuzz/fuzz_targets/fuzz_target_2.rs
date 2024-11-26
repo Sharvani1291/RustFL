@@ -1,3 +1,5 @@
+//fuzz_target_2.rs is contributed by Sharvani Chelumalla
+
 use actix_web::{web, HttpResponse, App, HttpServer};
 use libfuzzer_sys::fuzz_target; // Import the fuzz_target macro
 use RustFL::server::{AppState, WeightsUpdate};

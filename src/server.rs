@@ -1,4 +1,8 @@
 /************************************************************************************/
+//Server source code is contributed by Sai Pranavi Reddy Patlolla  & Sainath Talakanti
+//Documentation is contributed by Sainath Talakanti
+//Readme file is contributed by Sharvani Chelumalla
+
 pub use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
 pub use serde::{Deserialize, Serialize};
 pub use log::info;
@@ -111,6 +115,7 @@ pub async fn update_model(update: web::Json<WeightsUpdate>, data: web::Data<AppS
 }
 
 //Tests
+//Unit tests are contributed by Sharvani Chelumalla & Sai Pranavi Reddy Patlolla
 #[cfg(test)]
 mod tests {
     use super::*;

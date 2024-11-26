@@ -4,11 +4,12 @@ use log::info;
 use RustFL::secure_dp_utils::fed_avg_encrypted;
 use RustFL::server::{get, post, App, AppState, HttpServer, WeightsUpdate,create_model};
 use tch::nn;
-//Implemented by Sai Pranavi Reddy Patlolla
+
+//Server Example is contributed by Sai Pranavi Reddy Patlolla & Sainath Talakanti
 
 #[get("/get_model")]
 pub async fn get_model(data: web::Data<AppState>) -> impl Responder {
-    let global_model = data.global_model.lock().unwrap();
+    let _global_model = data.global_model.lock().unwrap();
     /*let model_state_dict = global_model
         .parameters()
         .iter()

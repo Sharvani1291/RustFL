@@ -1,3 +1,7 @@
+//Client source code is contributed by Sharvani Chelumalla & Sainath Talakanti
+//Documentation is contributed by Sainath Talakanti
+//Readme file is contributed by Sharvani Chelumalla
+
 pub use std::fmt::Debug;
 pub use log::{error, info, warn};
 pub use reqwest::Client;
@@ -341,6 +345,7 @@ pub async fn send_local_model_weights(
     }
 }
 
+//Unit tests are contributed by Sharvani Chelumalla & Sai Pranavi Reddy Patlolla
 //Tests
 #[cfg(test)]
 mod tests {

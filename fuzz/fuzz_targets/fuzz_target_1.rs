@@ -1,3 +1,5 @@
+//fuzz_target_1.rs is contributed by Sharvani Chelumalla
+
 #![no_main]
 use libfuzzer_sys::fuzz_target;
 use RustFL::client::send_local_model_weights;

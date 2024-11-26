@@ -1,3 +1,5 @@
+#Dockerfile contributed by Sharvani Chelumalla and Sainath Talakanti
+
 # Use the official Rust image
 FROM rust:latest
 
@@ -12,6 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # Download and install LibTorch
 RUN wget -q https://download.pytorch.org/libtorch/cpu/libtorch-macos-x86_64-2.2.0.zip -O libtorch.zip && \
+#RUN wget -q https://download.pytorch.org/libtorch/cpu/libtorch-macos-arm64-2.5.0.zip -O libtorch.zip && \
     unzip libtorch.zip -d /usr/local/ && \
     rm libtorch.zip
 
@@ -29,16 +32,18 @@ RUN python3 --version && pip3 --version
 # Download pytorch
 #RUN pip3 install --upgrade pip
 RUN pip3 install --break-system-packages torch==2.2.0 torchvision torchaudio
+#RUN pip3 install --break-system-packages torch==2.5.0 torchvision torchaudio
+
 
 # Set the environment variable for using PyTorch
 ENV LIBTORCH_USE_PYTORCH=1
 
 # Set the LIBTORCH environment variable before running cargo build
 #ENV LIBTORCH=/usr/local/libtorch
-#ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:$LD_LIBRARY_PATH
 #COPY /Users/sai/Downloads/libtorch /usr/local/libtorch
 #ENV DYLD_LIBRARY_PATH=RustFL/libtorch/lib
-ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib
+ENV DYLD_LIBRARY_PATH=/usr/local/libtorch/lib
 
 # Copy the current directory contents into the container
 COPY . .

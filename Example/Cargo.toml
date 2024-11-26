@@ -1,3 +1,5 @@
+#Cargo toml file contributed by all teammates
+
 [package]
 name = "Example"
 version = "0.1.0"
@@ -11,6 +13,7 @@ serde_json = "1.0.132"
 env_logger = "0.11.5"
 tokio = { version = "1.0.0", features = ["rt", "rt-multi-thread", "macros"] }#Logging replace in python
 tch = "0.15.0"
+#tch = "0.18.0"
 reqwest = { version = "0.12.7", features = ["json"] } #HTTP requests - High Level
 
 [[bin]]

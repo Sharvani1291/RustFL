@@ -1,3 +1,7 @@
+//Secure_dp_utils source code is contributed by Sharvani Chelimalla, Sai Pranavi Reddy Patlolla & Sainath Talakanti
+//Documentation is contributed by Sainath Talakanti
+//Readme file is contributed by Sharvani Chelumalla
+
 use fernet::Fernet;
 use rand::{thread_rng, Rng};
 use rand_distr::{Normal, Distribution};
@@ -98,6 +102,7 @@ pub fn fed_avg_encrypted(weights_updates: Vec<Vec<String>>) -> Vec<String> {
 }
 
 //Tests
+//Unit tests are contributed by Sharvani Chelumalla & Sai Pranavi Reddy Patlolla
 #[cfg(test)]
 mod tests {
     use super::*;

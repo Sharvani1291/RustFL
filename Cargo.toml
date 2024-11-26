@@ -1,3 +1,6 @@
+#Crates publish contributed by Sainath Talakanti
+#Cargo toml file contributed by all teammates
+
 [package]
 name = "RustFL"
 version = "0.3.0"
@@ -22,7 +25,7 @@ docs-only = []     # Documentation-only build without `tch`
 
 
 [dependencies]
-#rustfl = "0.2.0"
+#rustfl = "0.3.0"
 #client-only
 reqwest = { version = "0.12.7", features = ["json"] } #HTTP requests - High Level
 rand="0.8.5" #Random number generator
@@ -32,7 +35,7 @@ fernet="0.2.2"
 base64="0.22.1"
 
 #client-server
-#tch = "0.18.0"#Pytorch C++ API(libtorch)
+#tch = { version = "0.18.0", optional = true }#Pytorch C++ API(libtorch)
 tch = { version = "0.15.0", optional = true }
 serde = { version = "1.0", features = ["derive"] } #Serialize/Deserialize data
 serde_json = "1.0"
