@@ -5,16 +5,15 @@ FROM rust:latest
 WORKDIR /usr/src/myapp
 
 # Install dependencies for LibTorch (e.g., wget, unzip, and libclang)
-#RUN apt-get update && apt-get install -y \
-#    wget \
-#    unzip \
-#    libclang-dev \
-#    build-essential
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 # Download and install LibTorch
-#RUN wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip -O /tmp/libtorch.zip && \
-#    unzip /tmp/libtorch.zip -d /usr/local && \
-#    rm /tmp/libtorch.zip
+RUN wget -q https://download.pytorch.org/libtorch/cpu/libtorch-macos-x86_64-2.2.0.zip -O libtorch.zip && \
+    unzip libtorch.zip -d /usr/local/ && \
+    rm libtorch.zip
 
 # Install Python and pip3
 RUN apt-get update && apt-get install -y \
@@ -38,8 +37,8 @@ ENV LIBTORCH_USE_PYTORCH=1
 #ENV LIBTORCH=/usr/local/libtorch
 #ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:$LD_LIBRARY_PATH
 #COPY /Users/sai/Downloads/libtorch /usr/local/libtorch
-ENV DYLD_LIBRARY_PATH=RustFL/libtorch/lib
-#ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib:$LD_LIBRARY_PATH
+#ENV DYLD_LIBRARY_PATH=RustFL/libtorch/lib
+ENV LD_LIBRARY_PATH=/usr/local/libtorch/lib
 
 # Copy the current directory contents into the container
 COPY . .
@@ -51,4 +50,4 @@ RUN cargo build --release
 # Specify which binary to run (example_client or example_server)
 # Uncomment the one you want as the default
 #CMD ["./target/release/example_client"]
-#CMD ["./target/release/example_server"]
+#RUN cd Example && cargo run --bin example_server

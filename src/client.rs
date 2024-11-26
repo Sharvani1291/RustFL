@@ -381,6 +381,9 @@ mod tests {
 
         // Check if fetching the global model was successful
         assert!(result.is_ok());
+
+        // Here you could check if the server responded successfully
+        //Since this is a connection related function, we cannot do unit testing
     }
 
  ***********************************************************************************/
@@ -419,7 +422,7 @@ mod tests {
         send_local_model_weights(weights, loss_value, model_version, &model, encryption_key, device, get_url, post_url).await;
 
         // Here you could check if the server responded successfully
-        // For now, we will not check this as it's a mock call
+        // For now, we can not check this as it's a mock call
     }
 
     *************************************************************************** */

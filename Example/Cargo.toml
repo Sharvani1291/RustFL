@@ -15,7 +15,7 @@ reqwest = { version = "0.12.7", features = ["json"] } #HTTP requests - High Leve
 
 [[bin]]
 name = "example_client"
-path = "example_client.rs"
+path = "src/example_client.rs"
 [[bin]]
 name = "example_server"
-path = "example_server.rs"
+path = "src/example_server.rs"
