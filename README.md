@@ -130,6 +130,22 @@ We have also developed an application which uses our crate: [https://github.com/
 
 Our crate can be downloaded from crates.io: [https://crates.io/crates/RustFL]
 
+## Docker:
+
+To run the example codes in docker container, follow the steps:
+
+To build an image:
+
+                        docker build -t <inage_name> .
+
+To run the container for server:
+
+                        docker run -d --name <container_name_1> -p 8081:8081 <image_name>
+
+To run the container for client:
+
+                        docker run --name <container_name_2> --network="host" <image_name>
+
 ## Final Release Details
 
 This is the final release of RustFL, where the framework has been fully implemented and optimized. It incorporates Differential Privacy for added privacy protection and Secure Multiparty Computation (SMPC) to ensure that model updates from clients are aggregated securely, maintaining the confidentiality of each client’s data.
